@@ -1,0 +1,21 @@
+\chapter{Data Visualization with the DOM}\label{dataviz}
+
+Once data about each of the user's listened artists has been collected by the scraper and processed by the backend logic, the data then has to be shown to the user. Creating visualizations directly on the webpage (as opposed to creating a graphic separately) involves interacting heavily with the Document Object Model (DOM) -- an interface that structures the layout of webpages. This section will discuss the function and scope of interacting with the DOM, and the principles of data visualization that go into representing the data we obtain from the user's listening history.
+
+\section{The Document Object Model}
+
+The DOM is an interface that represents the structure of a webpage as a hierarchical tree of objects (an example is seen below in figure XX). When a browser loads an HTML document, it converts each element (such as paragraph or image blocks) into nodes in this tree. This structured representation allows programming languages like JavaScript to traverse and modify the content and layout of a webpage. Because the DOM is able to be be updated after its initial rendering, it can be coded to respond to user interactions like clicks or keystrokes.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{domtree}{.6}
+		%\vspace{-.2 in}
+		\caption{An example of a DOM tree}\label{domtree}
+	\end{center}
+\end{figure}
+
+[[explain stuff about how the DOM affects visual elements]]
+
+\section{Basic principles}
+
+\section{Scalable Vector Graphics}

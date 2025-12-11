@@ -86,7 +86,9 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\addbibresource{references.bib}
+%\addbibresource{references.bib,../annotated-bibliography/ISbib1.bib}
+%\addbibresource{references.bib}
+\addbibresource{../annotated-bibliography/ISbib1.bib}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -94,17 +96,17 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{Introduction to \LaTeX{} at Wooster}
-\thesistype{Example Independent Study Thesis} % you should make this Independent Study Thesis
-\author{Jon Breitenbucher}
+\title{Title to be Determined}
+\thesistype{Independent Study Thesis} % you should make this Independent Study Thesis
+\author{Andrew Fischer}
 %\presentdegrees{Ph.D.} % you should comment this line
 \degreetoobtain{BA in computer stuff}
 \presentschool{The College of Wooster}
 \academicprogram{MCS}
-\gradyear{2025}
-\advisor{Your advisor (Department)}
+\gradyear{2026}
+\advisor{D Guarnera}
 %\secondadvisor{Second Advisor}
-%\reader{Reader}
+%\reader{Nord}
 \copyrighted   
 %\copyrightdate{}                  
 \makeindex % comment this line if you do not have an index
@@ -232,7 +234,7 @@ I would like to acknowledge Prof. Lowell Boone in the Physics Department for his
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input{chapters/preface} % most theses do not have a preface so this should be commented
+%\input{chapters/preface} % most theses do not have a preface so this should be commented
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mainmatter
@@ -249,11 +251,18 @@ I would like to acknowledge Prof. Lowell Boone in the Physics Department for his
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input{chapters/introduction}
-Does it just need some text?
-\input{chapters/chapter1}
-\input{chapters/chapter2}
-\input{chapters/chapter3}
+\input{chapters/CH0introduction}
+\input{chapters/CHbackground}
+\input{chapters/CHfullstack}
+\input{chapters/CHdatabases}
+\input{chapters/CHdataviz}
+\input{chapters/CHimplementation}
+\input{chapters/CHZconclusion}
+
+%\input{chapters/exintroduction}
+%\input{chapters/exchapter1TEX}
+%\input{chapters/exchapter2FIG}
+%\input{chapters/exchapter3BIB}
 %\input{chapters/chapter4}
 %\input{chapters/chapter5}
 %\input{chapters/chapter6}
@@ -269,11 +278,11 @@ Does it just need some text?
 
 \backmatter
 
-\input{appendices/math}
-\input{appendices/java}
-\input{appendices/cpp}
-\input{appendices/options}
-\input{appendices/afterword}
+%\input{appendices/math}
+%\input{appendices/java}
+%\input{appendices/cpp}
+%\input{appendices/options}
+%\input{appendices/afterword}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %

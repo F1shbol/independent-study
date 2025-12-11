@@ -1,0 +1,93 @@
+\chapter{Implementation}\label{implement}
+
+This section will discuss the application of the topics discussed in creating the final software component.
+
+\section{Goal}
+
+The end goal of this project is to create a web application that, given a user's music listening history as input, scrapes listener data from Last.fm artist pages and presents to the user data about listener trends of the artists in their history. 
+
+\section{Last.fm as a data source}
+
+The nature of the Last.fm database differs from similar services like Spotify's API and necessitates an understanding of how its data is organized and stored to make informed decisions on how to process it and interpret the results.
+
+The most important aspect of Last.fm's data collection and cataloging is that its information is based solely on the literal text of its inputs. Music programs people use to send data to the site send just five pieces of information: artist name, song title, and timestamp -- which are all required to create an entry of a played song -- plus album title and album artist, which are optional. All of these (with two exceptions we will address later [redirects and the 14-day window]) are stripped of their upper- or lower-casing, then interpreted directly by Last.fm and processed into the database as-is, containing no more data than the strings they were sent in as.
+
+This approach differs from other databases like Spotify's collection of artist and listener data or MusicBrainz' publicly editable user-run database because it does not assign a separate ID number to artists, albums, or tracks, instead using the text itself as the primary identifier. The approach introduces certain benefits, drawbacks, and other considerations that will be discussed in the following sections.
+
+\subsection{Overlapping artists}
+
+Because the text of an artist's name is used as a unique identifier, the obvious issue this introduces is that artists that share the same name are indistinguishable from one another. Take Supernova as an example: on one hand it is the name of a Chilean girl group active in the early 2000s who scored a few hit singles in their home country. On another, it is the name of an obscure American 1990s punk band best-known for a novelty single about Chewbacca that was featured on the soundtrack to \textit{Clerks} (1999). Both artists share the same space in the Last.fm system, including the artist page, meaning if you look at the complete list of Supernova's played tracks (shown in figure 6.1), both bands' songs will be in the list.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{chewbacca}{.7}
+		%\vspace{-.2 in}
+		\caption{The American Supernova's "Chewbacca" is listed among songs by the Chilean Supernova}\label{chewbacca}
+	\end{center}
+\end{figure}
+
+This presents a problem for our data collection because the Chilean group, while by no means a hugely popular artist today, still commands a greater listenership on the whole than the American group, despite the latter group's one successful song. This means that using Last.fm data to determine the popularity of the American Supernova is inherently inaccurate, as the data would be presenting the combined listenerships of both, and would say they are far more popular than they actually are.
+
+\subsection{Misspelled inputs}
+
+Another potential issue with the data Last.fm retains of a user's listening history is that since the inputs come directly from software the user uses, it naturally can contain clerical errors like misspellings. This brings us to the first form of quality-control Last.fm performs on its database: artist redirects. Many artists in Last.fm's database have automatic redirects set up to catch common misspellings and misinputs -- for example, "Brian Transeau" will redirect to his proper stage name "BT", and "The Beetles" will redirect to "The Beatles".
+
+\subsection{Cleaning the data}
+
+\section{Processing data with python}
+
+This section will discuss how the above utilities are implemented in the working program.
+
+\subsection{Input: reading .txt and .csv files}
+
+Upon running the software, the user will be given two choices as to how they can input their desired listening data. First, they can enter it manually, in-browser. Second, they can download a .csv file from \href{https://mainstream.ghan.nl/export.html}{a web tool} that exports a Last.fm account's listening data. This subsection describes how each input is handled by the program.
+
+\subsubsection{Input via .txt}
+
+[[My plan is to let users type in their history manually if they don't have an accessible history]]
+
+\subsubsection{Input via .csv}
+
+For the .csv option, the user is given instructions to go to an external site to generate a .csv of their listening history. This site uses Last.fm's API to gather every song entry from the current date and time back to a time specified by the user. Since the six-month listener graph is shown on a three day delay, we need to select a date ten days in the past to get a week's worth of data from it. As such, the software generates the timestamp of ten days in the past for the user to enter into the website.
+
+[[The user will then upload this file to the site]] The program then iterates through every entry and keeps track of how many times each artist appears in a separate dictionary. It then appends each artist in the dictionary to aligned lists so the output of either input method is the same.
+
+\subsubsection{Fast mode}
+
+Because scraping a site takes so much more time than other Python processes, the number of artists appearing in one's listening history will have a significant effect on the runtime of the program. To make the program more convenient for users who listen to many artists just once, the program gives them an option to exclude artists with only 1 recorded entry. If selected, the program skips any artist with only one entry when appending the artists and playcounts to their respective lists.
+
+\subsection{Generating a list of target sites}
+
+Since Last.fm profile pages take the form https://www.last.fm/music/[artist name], many artists' names can simply be concatenated to the preceding part of the link. However, if the artist's name contains spaces or other select punctuation, those characters need to be replaced in order to be a valid url. Spaces are replaced by pluses, and other characters like question marks are replaced with unicode designations like "\%3F". For example, the name "Chance the Rapper" produces the link "https://www.last.fm/music/Chance+the+Rapper", and the name "+44" produces the link "https://www.last.fm/music/\%252B44". It then stores the links in another list aligned with the artist name and playcount.
+
+\subsection{Scraping: BeautifulSoup and Requests}
+
+When a list of valid links has been obtained, the software iterates through it, using Requests to get the source code for each profile page and using BeautifulSoup to turn the response into an object containing all the site's code in text form.
+
+Once each page's code has been obtained, the program uses BeautifulSoup's functions to search for tables within it. As the site is structured now, the second table on the page contains the six-month listening history. Web scraping projects like this often run the risk of breaking if anything on the site changes, and this one is no exception. If the table we're using changes or disappears, there isn't a way to fix it without going back in and re-coding the program. Thankfully, the site's layout has remained the same for just under six years as of this writing, so the likelihood of constant fixes being required is low.
+
+Once the table is acquired, each row is searched for its "js-date" and "js-value" keys, which are themselves searched for "datetime" and "data-value" values, respectively. Each row is parsed in this way, and the results are transformed from lists to a Pandas dataframe, which the next section will detail.
+
+%The site's structure has not changed since July of 2019
+%https://web.archive.org/web/20190710110401/last.fm/music/Prince
+
+\subsubsection{Best practices}
+
+One of the main roadblocks to web scraping is that many websites do not want to be scraped and will implement design choices to block or hinder potential scrapers. As discussed previously, Last.fm does not disallow the automated access of its artist pages, so it can be assumed that they are not hostile to scrapers in general. Still, it's important to not abuse this potential privilege and remain in the good graces of the administrators.
+
+Existing literature recommends setting a minimum delay between requests and testing the limits of your access through trial and error \cite{mitchell_web_2015}. A delay of 3 seconds was used during the testing of the software, and no restrictions were detected. This renders any potential methods of disguising the identity of the scraper unnecessary for the time being, though they will be described further in Future Work.
+
+\subsection{Processing: Pandas}
+%NumPy isn't actually used at the moment
+
+The table extracted by BeautifulSoup is then transformed into a Dataframe by the Pandas module, which takes from each artist the listener counts from every date and calculates the average over four timeframes: one week, one month (30 days), three months (90 days), and six months (180 days; the maximum stored by the table). These averages are appended to the Dataframe, attached to each artist and their playcount. Currently, the software only makes use of the one week timeframe, as it is takes the shortest time to run. The implementation of the other timeframes will be discussed in Future Work.
+
+To weight the listener averages, first a new column is created in the Dataframe multiplying each artist's playcount by their average listeners over the one week timeframe. The sum of all values in this new "weighted" column is then divided by the sum of all values in the playcount column, yielding a final value of the user's listener average over the timeframe. The significance of this value is: for each song the user listened to in the last week/month/etc., how popular on average was the artist, in terms of average daily listeners over the same time period.
+
+For most users, this number ranges from 5,000 to 40,000. However on its own the number means very little. After displaying it, the program then performs some additional operations to provide the user with context for their score.
+
+\subsubsection{Further data analysis}
+
+In addition to the basic processing, more context is provided about the artists within the user's dataset. Specifically, which artists were most and least mainstream, and which ones affected the final result the most. Determining the most and least mainstream artists can be solved with a single command each to the Dataframe. Determining the most influential artists requires that, for every artist, the listening average to be recalculated with that artist excluded. Subtracting the overall listener average from this number yields a positive or negative number signifying how much the overall average would have changed if that artist had not been included. For example, if a user listened to Kendrick Lamar -- the most popular artist at the time of writing -- once and Green Day -- a popular artist, but much less so -- 30-40 times, Kendrick Lamar would be shown as the most mainstream artist, but Green Day would have a further negative value here, meaning if the user had not listened to any Green Day, the number would have been lower than if they had instead not listened to any Kendrick Lamar.
+
+\section{Design decisions}

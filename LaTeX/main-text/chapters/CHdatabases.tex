@@ -1,0 +1,19 @@
+\chapter{Database theory and design}\label{databases}
+
+A database is often defined as an organized collection of information used to model some type of organizational process. In software, databases are the go-to way to store information persistently -- meaning data is saved in a location that will not be refreshed after the program concludes are refreshed. In web development, databases are located on the backend and store information that is accessed by the server to process and send, in some form, to a client\cite{hernandez_database_2021}. This chapter covers various permutations and architectures of databases in the realm of web development.
+
+\section{Relational databases}
+
+The most common form of database is the relational database. Invented in and popularized since the late 1960s, these databases store information in "relations", which are commonly known and seen as tables and represent a specific entity such as customers, orders, or products. Within each table, each row represents a unique record of that entity, and each column defines an attribute of the record.
+
+Every table includes a primary key: a field unique to its table that ensures each row can be referenced unambiguously. Relationships between tables are established through foreign keys, which associate one table’s records to those in another via the first table's primary key. This structure allows data to be stored in an organized form that reduces redundancy and maintains consistency.
+
+Functionally, relational databases use Structured Query Language (SQL) to define, manipulate, and query data. SQL is used to insert, update, delete, and retrieve information in a database. The relational model supports strong data integrity, which makes its databases widely used in applications where accuracy is essential.
+
+\section{Non-relational databases and NoSQL}
+
+Relational databases offer a number of advantages, but some contexts do not require all of them and would benefit from a system of database design exchanging unnecessary features for increased resource efficiency and reduced overhead. Non-relational databases (often called NoSQL to emphasize the lack of support for SQL queries relational databases use) lack the schemas relational databases use to define relationships and are often used to handle semi-structured data that needs more flexibility to store \cite{faulkes_sql_nodate}.
+
+\section{Something about one-file vs distributed nodes}
+
+\section{Normalization strategies}

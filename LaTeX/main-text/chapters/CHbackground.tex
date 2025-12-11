@@ -1,0 +1,122 @@
+%!TEX root = ../main.tex
+\chapter{Background}\label{bg}
+
+\section[APIs]{Web APIs}\label{sec:api}
+
+An Application Programming Interface (API) is a connection between two computer systems, as opposed to a connection between a system and a user. The term can be used to describe both how a software makes its output available to external programs, and the ways in which internal software components make information and outputs available to other components. In the context of web and internet services, web APIs accept, handle, or distribute the content of a website or web app. Unlike other, internal APIs, web APIs are usually designed to be exposed over a network and used remotely by multiple users.\cite{geewax_api_2021}
+
+\subsection{Purposes of Web APIs}
+
+In most traditional web pages, any information the site wants conveyed to the user must be taken from the original code and rendered graphically into a form the user can directly view. As web APIs represent computer-to-computer connections, there is no need to create visual elements and data structures that useful to human users. The two main benefits this creates are of automation and accessibility. Without the overhead of rendering graphical elements and with the ease of querying a system programmatically (i.e. via code), receiving and executing requests becomes a more efficient process, making it easier for it to be automated. The availability of data on-demand through an API makes it possible for other sites or services to make of its data, significantly increasing its potential reach and usefulness.
+
+\subsection{HTTP and RESTful APIs}
+
+Web APIs often communicate, like traditional webpages, via the Hypertext Transfer Protocol (HTTP), which sets an established protocol for communication over the web. HTTP facilitates a simple system of requests and responses between clients and servers, respectively, rather than a constant stream of data between the two. Requests and responses must each have a particular structure to comply with the protocol. Requests contain the following:
+
+\begin{itemize}
+	\item An HTTP method, most commonly the verbs GET, POST, PUT, or DELETE (which tell the server to fetch, add, update, and remove content, respectively). Other verbs and select nouns like OPTIONS (which asks for specifications to make valid requests to a resource) or HEAD (which functions as a GET request that ignores any returned body content) also exist.
+	\item The path of the resource to fetch; usually taking the form of a URL section like /api/v1/customers
+	\item The version of the HTTP protocol
+	\item Headers that may or may not be required by the server to convey additional information
+	\item A body containing the content of a request for certain methods like POST
+\end{itemize}
+
+Responses similarly contain a mix of required and optional components that form a consistent structure. They contain the following:
+
+\begin{itemize}
+	\item A status code, indicating if the request was successful, if so what was accomplished and if not, why not
+	\item A status message, a non-authoritative short description of the status code
+	\item The version of the HTTP protocol they follow
+	\item Optional HTTP headers, like those for requests
+	\item A body containing the content of a response for methods like GET that ask for resources
+\end{itemize}
+
+REST (Representational State Transfer) is a style of API design to make systems that communicate over HTTP using simple, predictable operations. REST-compliant (usually referred to as "RESTful") APIs model resources like files as identifiable URLs, and make all interactions with those resources stateless, meaning each request contains all the information the server needs to process it\cite{lauret_design_2025}. A hallmark of REST is closely adhering to the standards of HTTP (e.g. organizing request routes correctly among the GET, POST, PUT, and DELETE methods, despite doing so being arbitrary and optional). By following clear conventions and leveraging HTTP's existing infrastructure, REST makes APIs easier to understand, integrate with, and scale.
+
+\subsection{Other API structures}
+
+Though the structure is extremely popular and often-used, REST is not the only structural option for designing an API. Other architectures exist to cover different use cases and different methods of sending and receiving information.
+
+\subsubsection{Event-driven architecture}
+
+Event-driven architecture (EDA) refers to APIs where the server (or other event provider) sends out messages or signals for clients to receive on open channels. It is, in part, a reversal of the traditional REST structure, as the client waits for a server to send a specific form of information rather than the other way around. This structure is often used on internal APIs
+
+\subsubsection{HTTP Server-Sent Events}
+
+Similarly, Server-sent events (SSE) also involve a client listening for data from a server, but often involve a consistent stream of information like stock market figures. This architecture is useful when data is updated often enough that making individual requests would become overly-resource-intensive
+
+\subsubsection{WebSockets}
+
+Like SSE, WebSockets allow for a constant stream of data, but allow it to flow bidirectionally, meaning textual and binary data is shared in a constant stream between client and server. This method can become very resource-intensive, so care must be taken in what information is allowed to be sent over the connection.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{websockets}{0.8}
+		%\vspace{-.2 in}
+		\caption{A diagram of a sustained bidirectional connection using WebSockets}\label{websockets}
+	\end{center}
+\end{figure}
+
+\subsection{The Last.fm API and its Limitations}
+
+In addition to receiving listening data from users, the Last.fm API also allows developers to use some of the data Last.fm collects and generates to create their own web tools using listener data. These tools often take the form of websites that create more detailed visuals of users' data than the official site provides. However, there is an important limitation: not all data shown on the site is available though the API. Notably, the six-month listening history for each artist/album/song is absent from the API's methods.
+
+One popular web tool using the Last.fm API is the \href{https://mainstream.ghan.nl/}{Last.fm Mainstream Factor} -- a site that uses API data to accomplish the same goal of this project: to create a simple numerical score to represent how mainstream a given user's listening history is. However, without access to the six-month daily listener history, the only other data available through the API that can be used to represent an artist's popularity is their amount of all-time listeners -- a count of every unique user who has listened to that artist at some point.
+
+The site works by getting each artist's all-time listeners, converting it to a percentage of the largest listener base of any artist (currently \href{https://www.last.fm/music/Coldplay}{Coldplay}), and then averaging the artist's percentage for each track they played in a given timeframe. For example, \href{https://www.last.fm/music/Doechii}{Doechii} has 15\% the amount of listeners as Coldplay, so if you played her songs nine times and a Coldplay song once, you'd end up with a score of 23\%, with the larger share of Doechii songs weighing the average toward the bottom end of the scale.
+
+This is a poor method of approximating an artist's popularity, especially over spans of time measuring one year or shorter --  the maximum timeframe the Mainstream Factor can measure. It overemphasizes longer-standing artists and one-hit wonders who have many users listen to them at least once, but far fewer that listen regularly. It is also unable to take into account short-term effects on listener-ship such as album releases, where the amount of users listening to an artist will change dramatically over a course of weeks or even days.
+
+To create a better program to determine how mainstream a user's listening history is, we would ideally use the data from the six-month listener history graph contained on their profile page. Since the API does not offer this information, an alternate method of gathering this data must be used. This is where web scraping comes in.
+
+\section{Web scraping}
+
+Web scraping is the process of obtaining the source code of webpages to collect specific data from them, usually using automated software. Whereas an API provides a direct portal where users can request data from a site's backend, web scrapers request whole pages just as a web browser would, but extract the targeted data from the source code rather than displaying it.
+
+Webpages exist in HyperText Markup Language (HTML), which contains the structure and content of a webpage. When your browser loads a page, it sends an HTTP request to the web address specified by the URL. The server then sends the HTML located at that address to the browser, which renders it to be visible to the viewer. Web scrapers also request a site's code, but instead of rendering it, they keep it in text form and extract what they want from it, be that a data table, word count, list of external links, or whatever a user may want to know.\cite{mitchell_web_2015} Though other functions like client-side JavaScript provide additional features and interactivity for most pages, for most sites the HTML accessed by a browser or scraper will contain the bulk of a page's content.
+
+\subsection{Mechanisms}
+
+The structured nature of HTML files is very useful to scrapers. With HTML, pages are organized into a hierarchical structure, with elements like paragraphs, lists, data tables and embedded pictures and video contained in marked sections for he browser to properly render them. The classes and tags added to HTML elements for identification by associated style sheet files also come in handy, as a scraper can read these groupings just as easily as a style sheet can. For example, if a sample of text is marked <span class="highlight">...</span>, the scraper will be able to identify all highlighted text on a page and separate it from the rest.
+
+An important permutation of this concept is the ability to find the links that a page contains, which are also specially marked in HTML. Keeping a running list of links allows scrapers to traverse to those pages next, essentially traveling on a connected graph of webpages. Programs that perform this function are called "web crawlers" and are used to build sitemaps, collect data from many pages, or simply store all the code it finds to archive the state of each page at the time of retrieval.
+
+\subsection{An example scrape: robertchristgau.com}
+
+\autoref{htmltree} shows the HTML of a simple webpage in which all of the content is arranged in HTML's <table> format, which consists of <tbody>, <tr> (table row), and <td> (table data) tags. The figure shows the structure of the outer table, extending to three <td> tags. In the case of this webpage -- an archive of music critic Robert Christgau's album reviews for a particular artist, The Roots -- the first two <td> tags contain the page's header and sidebar (each formatted using another nested table, amusingly), while the third contains the reviews, contained in another structure shown in \autoref{roots}.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{htmltree}{.8}
+		%\vspace{-.2 in}
+		\caption{An example website's HTML structure}\label{htmltree}
+	\end{center}
+\end{figure}
+
+Unlike the other two outer <td> tags, this section does not encapsulate its data in a <table> tag. After a few <h2> (heading) and <ul> (non-enumerated list) tags to display the page info, the page separates each entry into <p> (paragraph) tags, which by default display the text within each of them in the order they appear in the HTML document. The <p> tags contain more tags delineating the name of the album, the label and release year, the text of the review, and the rating (two asterisks for the displayed entry, indicating an above-average grade on Christgau's esoteric scale).
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{roots}{.6}
+		%\vspace{-.2 in}
+		\caption{Structured data within a webpage}\label{roots}
+	\end{center}
+\end{figure}
+
+On this website, each page of reviews is structured in the same way, with three tables and the third one containing the page's main content. This gives a scraper some flexibility in how it would search for and access any information it wanted: it could find all the tables in the document and find the content table by looking for a table that contains the specific combination of header and paragraph tags, or simply count to the third table on the page and access it, as all pages' third tables will be the content tables. This example shows how the structure of a simple HTML file is seen from the perspective of a scraper. 
+
+\subsection{Conceptual limitations}
+
+If a scraper is designed to retrieve specific information from a webpage it visits, it often depends on the structure of the HTML to be able to find it quickly and easily. If a site's format and page structure is inconsistent across multiple pages, or if the changes altogether, the scraper will break. Clever use of error handling or fallback conditions can mitigate these issues, but scrapers are, by nature, largely at the mercy of whatever site they are accessing.
+
+Because web scraping accesses webpages using the same channels a normal user opening a webpage would, some discrepancies between the two systems may cause problems. Unlike web APIs, which are designed to be accessed programmatically and not directly by users, scraping automates and streamlines interactions with a system designed for human interaction. This could lead to a scraper being identified as a malicious actor (falsely or not), and introduce ethical challenges that are detailed in the next section.
+
+\subsection{Legal and ethical considerations}
+
+Because websites are typically designed for users to access and view them in a web browser, two main ethical concerns can arise from loading large amounts of web pages to gather data:
+
+First, there are concerns of server load. Scrapers request webpages far faster than humans can usually read them, so requesting many pages from the same site will lead to your scraper demanding an outsized share of the processing power a site can provide. Second, some site owners might not want data contained on their site to be collected and stored, even if on the surface it is accessible. In the early days of web development, these concerns led to the creation of a web design standard: robots.txt\cite{mitchell_web_2015}.
+
+robots.txt is a simple text file that most websites will store in their root directory (i.e., the robots.txt file for example.com could be found at example.com/robots.txt). Its purpose is to tell web scrapers which pages on the site, if any, they are allowed to access. Some sites don't care and leave the file empty, some are very restrictive and only allow access to search engines like Google, others operate somewhere in between. In legal cases involving unwanted web scraping, courts have generally interpreted the lack of a restriction in a site's robots.txt file as consent for a web scraper to access that part of the site\cite{mitchell_web_2015}. While workarounds certainly exist, many popular consumer web scraping tools will not allow you to access sites restricted by a robots.txt file.
+
+Last.fm's robots.txt file prohibits scrapers from accessing users' listening history and data, but does \textit{not} prohibit access to the profile pages where the charts we want to access are stored. This means that the project is in the clear functionally, ethically, and legally until further notice.

@@ -1,0 +1,174 @@
+\chapter{Full stack web design}\label{fullstack}
+
+This section will discuss some shit idk.
+
+This section will introduce the concept of the tech stack and discuss concepts of full-stack web development and their relevance to this project's goals. Starting with a primer on the basics of web applications and information transfer over the internet and following with sections on conceptual differences between single- and multi-page applications, concepts and examples in the software architecture of web apps, and concluding with an overview of the deployment process and the role of containerization. 
+
+\section{The Tech Stack in Web Development}
+
+In the field of computer programming, a software stack is the set of software components required to run and support an application\cite{adedeji_full-stack_2023}. The stacks one uses for different applications can vary, but popular combinations of components have proliferated over time due to the compatibility of certain components with one another. In web development, a common delineation drawn between stack components is between the "frontend", which encompasses the presentation and organization of a site's content, determining how a site is made to appear to a user; and the "backend", which encompasses the logic of the site, processing user requests by routing them to the right component and managing application operations.
+
+An example of a popular web development stack is MERN, an acronym standing for the four components it contains:
+
+\begin{itemize}
+	\item \textbf{MongoDB}, A database management system to store information needed by the application. It is non-relational, a concept explored in \autoref{databases}.
+	\item \textbf{Express.js}, a framework for designing web applications with JavaScript
+	\item \textbf{Angular}, a framework for designing user-interfaces
+	\item \textbf{Node.js}, a runtime environment allowing JavaScript to be executed outside of a browser.
+\end{itemize}
+
+Each component in the stack fulfills a different purpose, and together are able to run a web application. Since MERN does not require a specific operating system to run within [[Cite a MERN thing!]], it is known as an "OS-agnostic" stack. An example of the opposite -- an "OS-level" stack -- is LAMP, which requires use of the Linux operating system. The rest of the LAMP acronym stands for Apache, the framework to run the backend server; MySQL, the database manager; and Perl, as the primary coding language used.
+
+While some aspects of the MERN and LAMP stacks align with the other (e.g. both specify a database manager and a web development framework), they are not universal among web development stacks. Types of component that exist in one stack might be redundant or unnecessary in another. [[connect better to next section, whatever it'll be]]
+
+\section{Web app functionality}
+
+A key concept in the discussion of web apps and services is the Hypertext Transfer Protocol (HTTP), the Internet's basic communication protocol. It operates on a simple model of requests and responses: a client—usually a browser—sends an HTTP request to a server, specifying a method such as GET, POST, PUT, or DELETE, along with headers and optional body data. The server processes that request and returns an HTTP response, which includes a status code, headers, and usually a body containing the HTML code for the web service being accessed. HTTP is stateless, meaning each request is independent unless additional mechanisms like cookies, sessions, or tokens are used to maintain continuity \cite{noauthor_overview_2025}.
+
+In web design, HTTP forms the boundary between the frontend and backend. Browsers, mobile apps, or other clients communicate with backend servers through HTTP to retrieve data or trigger server-side actions. RESTful API designs map HTTP methods to specific actions or resources, while single-page applications rely on code sent to and stored on the client-side to update the UI dynamically. HTTP defines how components across the web exchange information through well-defined request/response patterns.
+
+\section{Single page vs. Multipage}
+
+One key design decision crucial in the early stages of creating web applications is the choice between creating a single-page or multi-page application. The distinction is fairly intuitive: single-page applications load only one HTML page initially and use client-side code like JavaScript to perform dynamic functionality such as fetching data and changing the user-interface. Multi-page applications, on the other hand, use more than one HTML page\cite{adedeji_full-stack_2023}. While the actual size of the sitemap in these applications can vary widely -- anywhere from a small handful of pages to dozens -- it is seen as a significant distinction to go from one page to multiple, no matter the exact level of the difference.
+
+The decision whether to structure an application as single-page or multi-page depends on how a designer wants information to be organized. Amazon is a multi-page application where information about each product is contained on a separate page. Google Maps, on the other hand, mostly operates on one homepage that loads the base map pulls up overlays depending on what locations the user searches for or selects. 
+
+\section{Architecture}
+
+The tech stacks in modern software and development often comprise multiple components that interact to perform its functionality. As we saw earlier, different stacks can contain or emphasize different types of components while being agnostic on others. The structure of these components and how they connect with one another can be seen as a basic definition of software architecture. Depending on the needs of the software for its stakeholders, it may need a different combination of components, or commonly-used components assembled and connected in a different way \cite{ghidersa_software_2022}. In web development, while the frontend and backend are commonly-used categorizations of services and components, there are many ways to structure an application, some blurring the lines between the categories.
+
+This section will cover both high-level and low-level architectural concepts with a primer on the basics of web applications and the transfer of information over the internet.
+
+\subsection{Architecture styles}
+
+An architecture style represents a combination of design decisions and principles to organize an application in a certain way. It is the highest level of organization, not used to solve a problem but to enhance certain good practices in a particular type of system.\cite{ghidersa_software_2022}
+
+\subsubsection{Monolithic Architecture}
+
+Monolithic architecture is a software development model where all components are interdependent and interconnected; every component is required to run the application. It treats the entire code as a single program, building a new project, applying frameworks, scripts, and templates, which makes testing easier.
+
+The main drawback to this style of architecture is that it becomes difficult to manage or update the code base as it grows. As each element is interdependent, scaling the application is complex. Introducing even a single point of failure can break the application.
+
+Monolithic architecture is best used for simple applications that have any future scalability as pre-planned as possible. Knowing as much about the future scope of a project's features in advance as possible helps determine what will be feasible or not under a given structure.\cite{william_web_2025}
+
+\subsubsection{Microservices Architecture}
+
+Microservices architecture serves as the logical counterpoint to a monolithic environment. Using it, code is organized among independent services that don't rely on one another to perform their specific function and communicate via RESTful APIs. Each microservice contains its own database and operates under its own business logic. Because it’s loosely coupled, microservice architecture makes each individual service much easier to scale while maintaining continuous delivery. Developers can quickly adapt to innovation. 
+
+However, deploying multiple services comes with drawbacks. When the number of services grows, the complexity of managing them grows, too. Microservices architecture is a good choice for highly complex applications with the resources to maintain and scale multiple independent services.\cite{william_web_2025}
+
+\subsection{Architecture patterns}
+
+In contrast to styles, architectural patterns are decisions and principles intended to avoid specific issues with the low-level implementation of the software. Essentially, the style comes first and determines the project's broadest level of structure, and the patterns determine the specifics of how each of the components interact with each other\cite{ghidersa_software_2022}. Below are the most prominent architectural styles and how each covers different possible use cases with their strengths and weaknesses.
+
+[Maybe go back later and put the book's diagrams in]
+
+\subsubsection{Layered}
+
+The layered pattern is a simple way to organize services in a web application. In it, information simply flows through different levels of the software to and from the user and the system in sequence, interacting with the code at each level before being passed on to the next one. The most common permutation of this pattern comprises four layers:
+\begin{itemize}
+	\item presentation (or UI), consisting of everything the user sees and interacts with. Pages, menus, text, images, etc.
+	\item business, in which the business logic of the application is defined and operated
+	\item persistence, containing mapping functions and other operations 
+	\item database, where information is persistently stored
+\end{itemize}
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{layered}{.25}
+		%\vspace{-.2 in}
+		\caption{An example of layered architecture}\label{layered}
+	\end{center}
+\end{figure}
+
+While the simplicity of this pattern makes it easy to understand and useful for lightweight, small-scale applications, the lack of flexibility brought on by sending information through many consecutive layers can be inefficient for large applications. Since the layers are interdependent, it also introduces many potential points of failure should one or more layers develop a fault.
+
+\subsubsection{Client-Server}
+
+This pattern delineates just two types of process: clients that need information and send structured requests for it, and servers that carry out these requests by fetching and processing the information, thus serving the clients. Often communicating through APIs, it is the server's job to stay open and available for requests from clients.
+
+Even simpler than the layered pattern, client-server promises significant flexibility and ease-of-use. Good security is a must, however, and its main drawback is that the single-route connection can become a performance bottleneck if not properly addressed. Though all website are, in a sense, built for client-server relationships in the form of user-to-service interaction, this pattern illustrates an architecture where there are only two components interacting at all -- distilling the relationship down to its most basic possible extreme.
+
+\subsubsection{Model-View-Controller (MVC)}
+
+Put simply, the Model-View-Controller pattern separates the components into three roles: backend logic, frontend presentation, and an intermediary to connect the two, respectively.
+\begin{itemize}
+	\item \textbf{Model} -- contains business logic, core functionality, and persistent data storage. It does not contain any logic that shapes how the data is presented to the user; that is the controller’s job
+	\item \textbf{View} -- Displays information to and interacts with the user. Takes data from the Model and Controller, processes it, and dynamically renders it for a user.
+	\item \textbf{Controller} -- Processes the inputs the view receives from the user to send to the model and returns data to the view and the user from the model.
+\end{itemize}
+This pattern is less straightforward than the others, which can make it unsuitable for some projects that aren't prepared to handle its particular style of decoupling. This pattern illustrates how multiple functions can be performed by a single layer in such a way that the flow of data is not interrupted. This manifests in how the controller handles the input/output of both the view and model, and how the model acts both processing and data storage. [[be clear about what makes this different from Layered, because now it just seems like different layers]]
+
+\begin{figure}[!ht]
+\begin{center}
+\woopic{MVC}{.9}
+%\vspace{-.2 in}
+\caption{A simple diagram of the Model-View-Controller architectural pattern}\label{mvc}
+\end{center}
+\end{figure}
+
+%\subsubsection{Microservices}
+
+\subsubsection{Command and Query Responsibility Segregation (CQRS)}
+
+The signature aspect of the CQRS pattern is its separation of data operations into reading- and writing-based actions: queries and commands. Queries are used to gather data from the database storage; the user specifies what data they want and the application fetches it for them. Commands are responsible for changing data, and can carry out a wide range of actions on it -- usually creating new data, reading present data, updating existing data, and deleting data (a set of basic commands commonly known as CRUD).
+
+The advantage of CQRS that it separates the intermediate layer of the application into two wholly distinct components that can operate independently -- this way more attention or resources can easily be given to one or the other if a particular project is more reading- or writing-based. It should not, however, be seen as a simple default for database-centric applications; if all you need in an application is the basic CRUD commands, CQRS is likely far more technically complex than is necessary. Usually working with GraphQL, CQRS is a pattern that is geared toward working with query languages to fetch and manipulate data.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{CQRS}{1.0}
+		%\vspace{-.2 in}
+		\caption{A simple diagram of the Command \& Query Relational Segregation architectural pattern}\label{cqrs}
+	\end{center}
+\end{figure}
+
+\subsubsection{Microfrontends}
+
+Where the user-facing functionality of an application is contained in a single layer in  many other  patterns, microfrontends refer to applications that split the user interface (UI) into multiple services, usually worked on by different teams, each with different tech stacks. The pattern essentially extends the microservices style to the frontend, greatly enhancing the capability of the UI by breaking up the monolith. Disadvantages of microfrontends include potential conflict between differently configured services and the difficulty of testing the frontend from the perspective of any one team.
+
+The emergence over time of the microfrontend pattern exemplifies the growing importance and complexity of user interfaces in the modern web. While naturally better-suited to large development teams and resource-intensive frontends, microfrontends serve as a proof-of-concept that it's just as possible to prioritize and expand the functionality of the user interface as with any other segment of an application.
+
+\subsubsection{JAMstack}
+
+Where microfrontends use multiple services to make the user interface more layered and complex, JAMstack (JAM stands for "Java, API, and Markup") moves in the opposite direction. The main principal of JAMstack is the lack of a traditional backend server -- pages are instead sent to the user through a Content Delivery Network (CDN), which can send files to the user but does not hold data or process requests. To accommodate this, rather than use dynamic webpages as all previous patterns generally do, JAMstack instead relies solely on static, pre-rendered webpages written in HTML and JavaScript. Without a web server, the client-side JavaScript code is responsible for handling communication with the CDN and any other microservices, such as data storage or identity management.
+
+Unlike patterns focused on optimizing for the dynamism of their frontend and/or the scalability of their backend features, JAMstack optimizes for space and cost management by eschewing dynamic frontends and many common backend features entirely. This pattern is most useful for simple web tools and other applications without the need to increase in scale over time.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{jamstack}{1.1}
+		%\vspace{-.2 in}
+		\caption{Contrasting the JAMstack (right) with a traditional layered architecture (left)}\label{jamstack}
+	\end{center}
+\end{figure}
+
+\subsubsection{Flux}
+
+Flux is a pattern created by Facebook, designed to work with the service's React frontend components to build client-side web applications. It was created as an alternative to the Model-View-Controller pattern described earlier to avoid unnecessarily tangled connections between the services in an application \cite{tay_depth_2020}. Flux has a unidirectional data flow, meaning data is always sent through the services in the same sequential order. In the most basic example, the app has three services that process an action taken by a user:
+\begin{itemize}
+	\item \textbf{Dispatcher} -- Receives the action taken by the user and determines both where to send it, and the order information is sent in
+	\item \textbf{Store} -- Contains the business logic, which it operates on data received from the dispatcher. Also manages the state of the application
+	\item \textbf{View} -- Receives specifications from the store and renders the information to be presented to the user. The view re-renders when the store announces changes and is responsible for creating new actions based on user input and interaction
+\end{itemize}
+Each of these services only sends data in one direction and receives it from the other without a need to double back to confirm or update data. This results in a simpler application that is easier to follow and debug while each service can be optimized for its narrow focus.
+
+Flux was designed with a specific use case in mind: managing React components simply and efficiently. Its lack of two-way inter-service communication would not be a good fit for a project managing large amounts of information, but for a user interface-focused application that doesn't send data more complex than basic text and/or images, it makes perfect sense.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{flux}{.3}
+		%\vspace{-.2 in}
+		\caption{A simple diagram of the Flux architectural pattern}\label{flux}
+	\end{center}
+\end{figure}
+
+% FIT THESE IN WHEREVER THEY END UP
+
+\section{Containerization and deployment}
+
+When applications move from the development to the deployment stage, the components of an application must have concrete ways of interacting with each other and the hardware (usually servers) required to become accessible to end users. A popular solution in recent times is containerization\cite{adedeji_full-stack_2023}.
+
+Containerization is a way of packaging an application together with everything it needs to run, like its code, system libraries, and configurations, into a single unit that can run on a physical or a virtual machine (VM). By existing at the OS level, containerization allows a developer to run multiple containers inside a single OS instance. While it reduces overhead and processing power, it also makes them much faster to start and more resource-efficient.
+
+Tools like Docker build these containers from reproducible definitions (which they call Dockerfiles), ensuring the application runs the same way on different machines, maintaining consistency in development, testing, and deployment. Containerization tools allow teams to ship applications as portable, self-contained artifacts that can run reliably across different environments such as local servers or cloud platforms.
