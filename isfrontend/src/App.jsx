@@ -44,6 +44,7 @@ function App() {
 function FileUploader() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
+  // const [content, setContent] = useState
 
   // When user selects a file
   const handleFileChange = (event) => {
