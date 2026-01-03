@@ -2,6 +2,9 @@ import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+from scraperfiles.scraper import startScraper
+
+# import pandas as pd
 
 app = Flask(__name__)
 # CORS(app, origins=["http://localhost:5173"])
@@ -14,7 +17,8 @@ def get_current_time():
 # (Optional) where to save uploaded files
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-ALLOWED_EXTENSIONS = {'txt', 'csv', 'png', 'jpg', 'jpeg', 'gif'}
+
+ALLOWED_EXTENSIONS = {'csv'}
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -36,6 +40,14 @@ def upload_file():
     if file and allowed_file(file.filename):
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(file_path)
-        return jsonify({"message": "File uploaded successfully!", "filename": file.filename})
+
+        data = startScraper(file_path, UPLOAD_FOLDER)
+
+        # with open(file_path, 'r') as f:
+        #     data = f.read()
+
+        # data = pd.read_csv(file_path)
+
+        return jsonify({"message": "File uploaded successfully!", "filename": file.filename, "content": data})
     # else:
     return jsonify({"error": "Upload failed: incorrect type", "filename": file.filename}), 400

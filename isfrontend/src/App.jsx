@@ -44,7 +44,7 @@ function App() {
 function FileUploader() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
-  // const [content, setContent] = useState
+  const [content, setContent] = useState("")
 
   // When user selects a file
   const handleFileChange = (event) => {
@@ -61,6 +61,8 @@ function FileUploader() {
     const formData = new FormData();
     formData.append("file", file); // <-- must match Flask key: request.files['file']
 
+    setMessage("Processing...");
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/upload", // Flask route
@@ -73,6 +75,8 @@ function FileUploader() {
       );
 
       setMessage(response.data.message);
+
+      setContent(response.data.content);
     } catch (error) {
       console.error(error);
       setMessage("Upload failed." + error);
@@ -90,6 +94,8 @@ function FileUploader() {
       <button onClick={handleUpload}>Upload</button>
 
       <p>{message}</p>
+
+      <p>{content}</p>
     </div>
   );
 }

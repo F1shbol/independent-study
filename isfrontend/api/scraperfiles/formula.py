@@ -40,16 +40,19 @@ def playSearch(A1, A2, n, Target):
         elif (A1[m] > Target):
             R = m - 1
         else:
-            print("You're exactly as mainstream as ", A2[m-1], " (", A1[m-1], " listeners last week)", sep="")
-            return
-    print("You're about as mainstream as ", A2[m-1], " (", A1[m-1], " listeners last week)\n", sep="")
-    return
+            # print("You're exactly as mainstream as ", A2[m-1], " (", A1[m-1], " listeners last week)", sep="")
+            return ["\nYou're exactly as mainstream as ", str(A2[m-1]), " (", str(A1[m-1]), " listeners last week)"]
+    # print("You're about as mainstream as ", A2[m-1], " (", A1[m-1], " listeners last week)\n", sep="")
+    return ["\nYou're about as mainstream as ", str(A2[m-1]), " (", str(A1[m-1]), " listeners last week)"]
 
 def printBookends(frame):
-    print("Your most mainstream artist was ", frame.loc[len(frame)-1].iloc[1], " (", frame.loc[len(frame)-1].iloc[3], 
-      " average listeners last week)", sep="")
-    print("Your most obscure artist was ", frame.loc[0].iloc[1], " (", frame.loc[0].iloc[3], 
-      " average listeners last week)\n", sep="")
+    # print("Your most mainstream artist was ", frame.loc[len(frame)-1].iloc[1], " (", frame.loc[len(frame)-1].iloc[3], 
+    #   " average listeners last week)", sep="")
+    # print("Your most obscure artist was ", frame.loc[0].iloc[1], " (", frame.loc[0].iloc[3], 
+    #   " average listeners last week)\n", sep="")
+    return ["\nYour most mainstream artist was ", str(frame.loc[len(frame)-1].iloc[1]), " (", str(frame.loc[len(frame)-1].iloc[3]), 
+      " average listeners last week)", "\nYour most obscure artist was ", str(frame.loc[0].iloc[1]), " (", str(frame.loc[0].iloc[3]), 
+      " average listeners last week)"]
 
 def totalListenersColumn(frame):
     lst = []
@@ -87,7 +90,9 @@ def addGeorge(frame):
     return frame
 
 def findHeaviest(df):
-    print("Your favorite mainstream artist was ", df.loc[df['impact'].idxmax()].iloc[1], ", which you played ",
-          df.loc[df['impact'].idxmax()].iloc[2], " times", sep="")
-    print("Your favorite obscure artist was ", df.loc[df['impact'].idxmin()].iloc[1], ", which you played ",
-          df.loc[df['impact'].idxmin()].iloc[2], " times", sep="")
+    # print("Your favorite mainstream artist was ", df.loc[df['impact'].idxmax()].iloc[1], ", which you played ",
+    #       df.loc[df['impact'].idxmax()].iloc[2], " times", sep="")
+    # print("Your favorite obscure artist was ", df.loc[df['impact'].idxmin()].iloc[1], ", which you played ",
+    #       df.loc[df['impact'].idxmin()].iloc[2], " times", sep="")
+    return ["\nYour favorite mainstream artist was ", str(df.loc[df['impact'].idxmax()].iloc[1]), ", which you played ", str(df.loc[df['impact'].idxmax()].iloc[2]), " times", "\nYour favorite obscure artist was ", str(df.loc[df['impact'].idxmin()].iloc[1]), ", which you played ",
+          str(df.loc[df['impact'].idxmin()].iloc[2]), " times"]

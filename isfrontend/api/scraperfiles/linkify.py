@@ -14,22 +14,23 @@ import os
 import fnmatch
 import csv
 
-def linkifyInput(modes):
+def linkifyInput(file_path):
     starter = "https://www.last.fm/music/"
     names = []
     playcounts = []
 
     # take the options decided in welcome()
-    if (modes[0] == 0):
-        filetype = 'csv'
-    else:
-        filetype = 'txt'
+    # if (modes[0] == 0):
+    #     filetype = 'csv'
+    # else:
+    #     filetype = 'txt'
+    filetype = 'csv'
 
     # Same deal. This option will ignore all artists with only one play
-    if (modes[1] == 0):
-        fastMode = 'n'
-    else:
-        fastMode = 'y'
+    # if (modes[1] == 0):
+    #     fastMode = 'n'
+    # else:
+    #     fastMode = 'y'
 
     if (filetype == "txt"):
         # Finds the number of two-line entries in the input file
@@ -56,11 +57,12 @@ def linkifyInput(modes):
         
         # Since the ghan exporter starts its .csv files with "scrobbles",
         # we search for that and if there's only one match we select it
-        cur_dir = os.getcwd()
-        pwdLs = os.listdir(cur_dir)
-        srch = fnmatch.filter(pwdLs, "scrobbles*")
-        if (len(srch) == 1):
-            inputCsv = srch[0]
+        # cur_dir = os.getcwd()
+        # pwdLs = os.listdir(cur_dir)
+        # srch = fnmatch.filter(pwdLs, "scrobbles*")
+        # if (len(srch) == 1):
+        #     inputCsv = srch[0]
+        inputCsv = file_path
 
         # Reads the input .csv to a dict object, then iterates through it
         # creating a new dictionary where each artist is a key and their
@@ -73,18 +75,20 @@ def linkifyInput(modes):
 
         ## Here's where you should print out the dictionary as it stands and ask the user to set the threshold should be
         ## but only if they have fast mode on already
-        if (fastMode == 'y'):
-            # myVals = list(thisdict.values())
-            # myVals.sort()
+        # if (fastMode == 'y'):
+        #     # myVals = list(thisdict.values())
+        #     # myVals.sort()
 
-            # sortdict = {i:thisdict[i] for i in myVals}
-            sortdict = sorted(thisdict.items(), key=lambda kv: (kv[1], kv[0]))
-            print(sortdict)
-            print("\nThese are the artists in your history with playcounts. Enter the desired threshold:")
-            thresh = int(input())
+        #     # sortdict = {i:thisdict[i] for i in myVals}
+        #     sortdict = sorted(thisdict.items(), key=lambda kv: (kv[1], kv[0]))
+        #     print(sortdict)
+        #     print("\nThese are the artists in your history with playcounts. Enter the desired threshold:")
+        #     thresh = int(input())
 
         # Append the names and playcounts to their lists
         # For fast mode it checks if the artist has enough plays to clear the threshold first
+        fastMode = 'y'
+        thresh = 4
         if (fastMode == 'y'):
             for x, y in thisdict.items():
                 if (int(y) > thresh):
