@@ -4,13 +4,38 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import axios from 'axios'
 
+import * as d3 from 'd3';
+import Charts from './Charts/Charts';
+
 function App() {
   const [count, setCount] = useState(0)
   const [currentTime, setCurrentTime] = useState(0);
+  
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  // Time effect
   useEffect(() => {
-    fetch('/api/time').then(res => res.json()).then(data => {
-      setCurrentTime(data.time);
+    fetch('/api/time').then(res => res.json()).then(Tdata => {
+      setCurrentTime(Tdata.time);
     });
+  }, []);
+
+  // D3 effect
+  useEffect(() => {
+    const dataURL = "https://d3js-in-action-third-edition.github.io/hosted-data/apis/front_end_frameworks.json";
+    
+    let mounted = true;
+    d3.json(dataURL).then(data => {
+      console.log("data", data);
+
+      if (mounted) {
+        setData(data);
+        setLoading(false);
+      }
+    });
+
+    return () => mounted = false;
   }, []);
 
   return (
@@ -37,6 +62,11 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
       <FileUploader/>
+
+      <div className="container">
+        {loading && <div className="loading">Loading...</div>}
+        {!loading && <Charts data={data} />}
+      </div>
     </>
   )
 }
