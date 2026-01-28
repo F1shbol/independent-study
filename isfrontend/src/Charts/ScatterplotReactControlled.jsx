@@ -10,17 +10,20 @@ const ScatterplotReactControlled = props => {
   const innerWidth = width - props.margin.left - props.margin.right;
   const innerHeight = height - props.margin.top - props.margin.bottom;
 
+  // I guess the domain is the extent of the data, and the range is the render size
   const xScale = d3.scaleLinear()
-    .domain([0, d3.max(props.data, d => d.user_count)])
+    // .domain([0, d3.max(props.data, d => d.user_count)])
+    .domain([0, d3.max(props.data, d => d.playcount)])
     .range([0, innerWidth])
     .nice();
   const yScale = d3.scaleLinear()
-    .domain([0, 100])
+    // .domain([0, 100])
+    .domain([0, d3.max(props.data, d => d.x1w)])
     .range([innerHeight, 0]);
 
   return (
     <Card>
-      <h2>Retention vs Usage</h2>
+      <h2>Chart name</h2>
       <ChartContainer
         width={width}
         height={height}
@@ -31,22 +34,25 @@ const ScatterplotReactControlled = props => {
           scale={xScale}
           innerWidth={innerWidth}
           innerHeight={innerHeight}
-          label={"User Count"}
+          label={"Playcount"}
         />
         <Axis 
           type="left"
           scale={yScale}
           innerWidth={innerWidth}
           innerHeight={innerHeight}
-          label={"Retention %"}
+          label={"Listeners (1w)"}
         />
         {props.data.map(framework => (
           <Circle 
-            key={`circle-${framework.id}`}
-            cx={xScale(framework.user_count)}
-            cy={yScale(framework.retention_percentage)}
+            // key={`circle-${framework.id}`}
+            // cx={xScale(framework.user_count)}
+            // cy={yScale(framework.retention_percentage)}
+            key={`circle-${framework.name}`}
+            cx={xScale(framework.playcount)}
+            cy={yScale(framework.x1w)}
             r={6}
-            fill={props.colorScale(framework.id)}
+            // fill={props.colorScale(framework.id)}
           />
         ))}
       </ChartContainer> 

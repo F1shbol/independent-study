@@ -9,9 +9,9 @@ import BarChart from './BarChart';
 const Charts = props => {
   const margin = {top: 30, right: 10, bottom: 50, left: 60};
 
-  const colorScale = d3.scaleOrdinal()
-    .domain(props.data.ids)
-    .range(d3.schemeTableau10);
+  // const colorScale = d3.scaleOrdinal()
+  //   .domain(props.data.ids)
+  //   .range(d3.schemeTableau10);
 
   return (
     <Fragment>
@@ -25,8 +25,9 @@ const Charts = props => {
             <div className='col-12'>
               <ScatterplotReactControlled 
                 margin={margin}
-                data={props.data.experience}
-                colorScale={colorScale}
+                // data={props.data.experience}
+                data={props.data}
+                // colorScale={colorScale}
               />
             </div>
             {/* <div className='col-12'>

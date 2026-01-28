@@ -23,7 +23,8 @@ function App() {
 
   // D3 effect
   useEffect(() => {
-    const dataURL = "https://d3js-in-action-third-edition.github.io/hosted-data/apis/front_end_frameworks.json";
+    // const dataURL = "https://d3js-in-action-third-edition.github.io/hosted-data/apis/front_end_frameworks.json";
+    const dataURL = "http://127.0.0.1:5000/api/file1.json"
     
     let mounted = true;
     d3.json(dataURL).then(data => {

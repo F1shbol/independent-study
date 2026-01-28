@@ -62,10 +62,10 @@ def startScraper(file_path, UPLOAD_FOLDER):
         sleep(3)
         idx += 1
 
-    frame["1w"] = oneweek
-    frame["1mo"] = onemonth
-    frame["3mo"] = threemonths
-    frame["6mo"] = sixmonths
+    frame["x1w"] = oneweek
+    frame["x1mo"] = onemonth
+    frame["x3mo"] = threemonths
+    frame["x6mo"] = sixmonths
 
     frame = addWeight(frame) # adds a new column with artists' weighted OWLAs
     OWLA = frame['weighted'].sum() / frame['playcount'].sum()
@@ -73,10 +73,10 @@ def startScraper(file_path, UPLOAD_FOLDER):
     textOutput = "".join([textOutput,"Your one-week listener average is ", str(round(OWLA, 1)), 
         "\nThis means that for each song you played, that many people listened to the artist every day last week"])
 
-    frame = frame.sort_values(by='1w')
+    frame = frame.sort_values(by='x1w')
     frame = frame.reset_index() # This adds an extra index column to the left, affecting the iloc calls below
     artistList = frame['name'].tolist()
-    playsList = frame['1w'].tolist()
+    playsList = frame['x1w'].tolist()
 
     templist = [textOutput]
     templist.extend(playSearch(playsList, artistList, len(artistList), OWLA))
@@ -99,5 +99,9 @@ def startScraper(file_path, UPLOAD_FOLDER):
     export_path = os.path.join(UPLOAD_FOLDER, "file1.csv")
 
     frame.to_csv(export_path)
+
+    export_path2 = os.path.join(UPLOAD_FOLDER, "file1.json")
+
+    frame.to_json(export_path2, orient='records', compression='infer')
 
     return textOutput

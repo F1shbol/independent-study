@@ -1,6 +1,7 @@
 import time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+import json
 import os
 from scraperfiles.scraper import startScraper
 
@@ -51,3 +52,16 @@ def upload_file():
         return jsonify({"message": "File uploaded successfully!", "filename": file.filename, "content": data})
     # else:
     return jsonify({"error": "Upload failed: incorrect type", "filename": file.filename}), 400
+
+
+@app.route("/api/<filename>", methods=["GET"])
+def get_json_file(filename):
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+
+    if not os.path.exists(file_path):
+        return jsonify({"error": "File not found"}), 404
+
+    with open(file_path, "r") as f:
+        data = json.load(f)
+
+    return jsonify(data)
