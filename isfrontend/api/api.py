@@ -42,14 +42,17 @@ def upload_file():
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(file_path)
 
-        data = startScraper(file_path, UPLOAD_FOLDER)
+        resultDict = startScraper(file_path, UPLOAD_FOLDER)
+
+        textOutput = resultDict["output"]
+        jsonfile = resultDict["jsonfile"]
 
         # with open(file_path, 'r') as f:
         #     data = f.read()
 
         # data = pd.read_csv(file_path)
 
-        return jsonify({"message": "File uploaded successfully!", "filename": file.filename, "content": data})
+        return jsonify({"message": "File uploaded successfully!", "filename": file.filename, "content": textOutput, "jsonname": jsonfile})
     # else:
     return jsonify({"error": "Upload failed: incorrect type", "filename": file.filename}), 400
 

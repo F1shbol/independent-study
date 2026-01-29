@@ -13,7 +13,7 @@ def parseRow3(row):
     return time, listeners
 
 def multiplyCells(row):
-    return float(row['playcount']) * float(row['1w'])
+    return float(row['playcount']) * float(row['x1w'])
 
 # Uses multiplyCells above to weight each artist's listener count by their
 # playcount, then adds the resulting series to the dataframe as a new column

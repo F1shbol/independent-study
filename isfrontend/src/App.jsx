@@ -8,11 +8,10 @@ import * as d3 from 'd3';
 import Charts from './Charts/Charts';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+
 
   // Time effect
   useEffect(() => {
@@ -22,22 +21,22 @@ function App() {
   }, []);
 
   // D3 effect
-  useEffect(() => {
-    // const dataURL = "https://d3js-in-action-third-edition.github.io/hosted-data/apis/front_end_frameworks.json";
-    const dataURL = "http://127.0.0.1:5000/api/file1.json"
+  // useEffect(() => {
+  //   // const dataURL = "https://d3js-in-action-third-edition.github.io/hosted-data/apis/front_end_frameworks.json";
+  //   const dataURL = "http://127.0.0.1:5000/api/file1.json"
     
-    let mounted = true;
-    d3.json(dataURL).then(data => {
-      console.log("data", data);
+  //   let mounted = true;
+  //   d3.json(dataURL).then(data => {
+  //     console.log("data", data);
 
-      if (mounted) {
-        setData(data);
-        setLoading(false);
-      }
-    });
+  //     if (mounted) {
+  //       setData(data);
+  //       setLoading(false);
+  //     }
+  //   });
 
-    return () => mounted = false;
-  }, []);
+  //   return () => mounted = false;
+  // }, []);
 
   return (
     <>
@@ -64,10 +63,7 @@ function App() {
       </p>
       <FileUploader/>
 
-      <div className="container">
-        {loading && <div className="loading">Loading...</div>}
-        {!loading && <Charts data={data} />}
-      </div>
+
     </>
   )
 }
@@ -76,6 +72,10 @@ function FileUploader() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [content, setContent] = useState("")
+  // const [filepath, setFilepath] = useState("") 
+
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
 
   // When user selects a file
   const handleFileChange = (event) => {
@@ -94,6 +94,8 @@ function FileUploader() {
 
     setMessage("Processing...");
 
+    let filename;
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/upload", // Flask route
@@ -108,10 +110,30 @@ function FileUploader() {
       setMessage(response.data.message);
 
       setContent(response.data.content);
+      // setFilepath(response.data.jsonpath);
+      filename = response.data.jsonname;
     } catch (error) {
       console.error(error);
       setMessage("Upload failed." + error);
     }
+    // const starter = "http://127.0.0.1:5000/api/";
+    // const dataURL = starter + filepath;
+    // const dataURL = `http://127.0.0.1:5000/api/${filepath}`;
+    // const dataURL = starter.concat(filepath);
+    
+    const dataURL = `http://127.0.0.1:5000/api/${filename}`;
+    
+    console.log("requestURL", dataURL);
+    
+    let mounted = true;
+    d3.json(dataURL).then(data => {
+      console.log("data", data);
+
+      if (mounted) {
+        setData(data);
+        setLoading(false);
+      }
+    });
   };
 
   return (
@@ -127,6 +149,10 @@ function FileUploader() {
       <p>{message}</p>
 
       <p>{content}</p>
+      <div className="container">
+        {loading && <div className="loading">Loading...</div>}
+        {!loading && <Charts data={data} />}
+      </div>
     </div>
   );
 }

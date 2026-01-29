@@ -2,6 +2,7 @@ from .linkify import linkifyInput
 from .frontend import welcome
 from .formula import getScore, playSearch, addWeight, parseRow3, printBookends, findHeaviest, addGeorge
 
+from datetime import datetime
 import pandas as pd
 from bs4 import BeautifulSoup as Soup
 import requests
@@ -93,15 +94,23 @@ def startScraper(file_path, UPLOAD_FOLDER):
     templist.extend(findHeaviest(frame))
     textOutput = "".join(templist)
     
+    int_stamp = int(datetime.now().timestamp())
+    current_timestamp = str(int_stamp)
+    csv_name = current_timestamp + ".csv"
+    json_name = current_timestamp + ".json"
 
     frame = frame.drop(['weighted', 'LstnrTotal', 'PlayTotal', 'LstnrAvg'], axis=1)
 
-    export_path = os.path.join(UPLOAD_FOLDER, "file1.csv")
+    export_path = os.path.join(UPLOAD_FOLDER, csv_name)
 
     frame.to_csv(export_path)
 
-    export_path2 = os.path.join(UPLOAD_FOLDER, "file1.json")
+    export_path2 = os.path.join(UPLOAD_FOLDER, json_name)
 
     frame.to_json(export_path2, orient='records', compression='infer')
 
-    return textOutput
+    # return textOutput
+    return {
+        "output": textOutput,
+        "jsonfile": json_name
+    }
