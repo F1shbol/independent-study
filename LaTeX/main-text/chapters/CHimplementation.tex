@@ -16,7 +16,7 @@ This approach differs from other databases like Spotify's collection of artist a
 
 \subsection{Overlapping artists}
 
-Because the text of an artist's name is used as a unique identifier, the obvious issue this introduces is that artists that share the same name are indistinguishable from one another. Take Supernova as an example: on one hand it is the name of a Chilean girl group active in the early 2000s who scored a few hit singles in their home country. On another, it is the name of an obscure American 1990s punk band best-known for a novelty single about Chewbacca that was featured on the soundtrack to \textit{Clerks} (1999). Both artists share the same space in the Last.fm system, including the artist page, meaning if you look at the complete list of Supernova's played tracks (shown in figure 6.1), both bands' songs will be in the list.
+Because the text of an artist's name is used as a unique identifier, the obvious issue this introduces is that artists that share the same name are indistinguishable from one another. Take Supernova as an example: on one hand it is the name of a Chilean girl group active in the early 2000s who scored a few hit singles in their home country. On another, it is the name of an obscure American 1990s punk band best-known for a novelty single about Chewbacca that was featured on the soundtrack to \textit{Clerks} (1999). Both artists share the same space in the Last.fm system, including the artist page, meaning if you look at the complete list of Supernova's played tracks (shown in \autoref{chewbacca}), both bands' songs will be in the list.
 
 \begin{figure}[!ht]
 	\begin{center}
@@ -109,5 +109,19 @@ For most users, this number ranges from 5,000 to 40,000. However on its own the 
 \subsubsection{Further data analysis}
 
 In addition to the basic processing, more context is provided about the artists within the user's dataset. Specifically, which artists were most and least mainstream, and which ones affected the final result the most. Determining the most and least mainstream artists can be solved with a single command each to the Dataframe. Determining the most influential artists requires that, for every artist, the listening average to be recalculated with that artist excluded. Subtracting the overall listener average from this number yields a positive or negative number signifying how much the overall average would have changed if that artist had not been included. For example, if a user listened to Kendrick Lamar -- the most popular artist at the time of writing -- once and Green Day -- a popular artist, but much less so -- 30-40 times, Kendrick Lamar would be shown as the most mainstream artist, but Green Day would have a further negative value here, meaning if the user had not listened to any Green Day, the number would have been lower than if they had instead not listened to any Kendrick Lamar.
+
+\section{Visualizing the data with D3 and JavaScript}
+
+\subsection{Retrieving the processed data}
+
+[[Describe the process by which the data is sent from the Python files to the React frontend]]
+
+\subsection{Creating a scatterplot}
+
+[[Describe the structure and function of the basic scatterplot code (i.e. circles and axes)]]
+
+\subsection{Augmenting the chart}
+
+[[Depending on what I get to, describe the interactivity of the graph. Tooltips, etc]]
 
 \section{Design decisions}

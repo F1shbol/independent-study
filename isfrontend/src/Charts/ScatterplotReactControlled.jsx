@@ -11,15 +11,26 @@ const ScatterplotReactControlled = props => {
   const innerHeight = height - props.margin.top - props.margin.bottom;
 
   // I guess the domain is the extent of the data, and the range is the render size
+
+  const roundedLog = Math.ceil(Math.log2(d3.max(props.data, d => d.x1w)))
+  const paddedMax = Math.pow(2,roundedLog)
+
+  console.log("roudned log", roundedLog);
+  console.log("padded max", paddedMax);
+
   const xScale = d3.scaleLinear()
     // .domain([0, d3.max(props.data, d => d.user_count)])
     .domain([0, d3.max(props.data, d => d.playcount)])
     .range([0, innerWidth])
     .nice();
-  const yScale = d3.scaleLinear()
-    // .domain([0, 100])
-    .domain([0, d3.max(props.data, d => d.x1w)])
-    .range([innerHeight, 0]);
+  // const yScale = d3.scaleLinear()
+  //   // .domain([0, 100])
+  //   .domain([0, d3.max(props.data, d => d.x1w)])
+  //   .range([innerHeight, 0]);
+  // const yScale = d3.scaleLog([d3.min(props.data, d => d.x1w), d3.max(props.data, d => d.x1w)], [innerHeight, 0])
+  const yScale = d3.scaleLog([d3.min(props.data, d => d.x1w), paddedMax+1], [innerHeight, 0])
+      .base(2)
+      .nice();
 
   return (
     <Card>
@@ -44,16 +55,23 @@ const ScatterplotReactControlled = props => {
           label={"Listeners (1w)"}
         />
         {props.data.map(framework => (
-          <Circle 
-            // key={`circle-${framework.id}`}
-            // cx={xScale(framework.user_count)}
-            // cy={yScale(framework.retention_percentage)}
-            key={`circle-${framework.name}`}
-            cx={xScale(framework.playcount)}
-            cy={yScale(framework.x1w)}
-            r={6}
-            // fill={props.colorScale(framework.id)}
-          />
+          <g key={`point-${framework.name}`}>
+            <Circle
+              cx={xScale(framework.playcount)}
+              cy={yScale(framework.x1w)}
+              r={3}
+              // fill={props.colorScale(framework.id)}
+            />
+            <text
+              x={xScale(framework.playcount)}
+              y={yScale(framework.x1w) - 8}
+              textAnchor="middle"
+              fontSize="9"
+              fill="#333"
+            >
+              {framework.name}
+            </text>
+          </g>
         ))}
       </ChartContainer> 
     </Card>

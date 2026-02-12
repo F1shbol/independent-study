@@ -7,7 +7,7 @@ import ScatterplotReactControlled from './ScatterplotReactControlled';
 import BarChart from './BarChart';
 
 const Charts = props => {
-  const margin = {top: 30, right: 10, bottom: 50, left: 60};
+  const margin = {top: 30, right: 40, bottom: 50, left: 85};
 
   // const colorScale = d3.scaleOrdinal()
   //   .domain(props.data.ids)

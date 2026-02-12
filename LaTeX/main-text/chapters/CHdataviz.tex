@@ -1,14 +1,31 @@
 \chapter{Data Visualization with the DOM}\label{dataviz}
 
-Once data about each of the user's listened artists has been collected by the scraper and processed by the backend logic, the data then has to be shown to the user. Creating visualizations directly on the webpage (as opposed to creating a graphic separately) involves interacting heavily with the Document Object Model (DOM) -- an interface that structures the layout of webpages. This section will discuss the function and scope of interacting with the DOM, and the principles of data visualization that go into representing the data we obtain from the user's listening history.
+Once data about each of the user's listened artists has been collected by the scraper and processed by the backend logic, the data then has to be shown to the user. Creating visualizations directly on the webpage (as opposed to creating a graphic separately) involves interacting heavily with the Document Object Model (DOM) -- an interface that structures the layout of webpages. This section will discuss the  principles of data visualization that go into representing the data we obtain from the user's listening history, the function and scope of interacting with the DOM, and how the project uses frontend software frameworks, combined with visualization frameworks, to build and display the visualizations.
+
+\section{Visualization principles}
+
+[[Overview of data visualization as a subject]]
+
+\subsection{Creating an informative chart}
+
+[[What concepts are needed to make the data clear and understandable?]]
+
+In the scope of this project, insights about a user's music listening history are derived from processes run on and parallel to the original data. A user's history shows us every track they played, the artist, the album, and the timestamp. Once a list of all the artists in a given history is created, the data on how popular that artist is (in terms of recent daily listeners) can be gathered. With this, we now have the two metrics that would seem to determine how mainstream a user's listening habits are: for every artist in their history, how many times the user listened to them, and how popular they are over the past week. Charting many points of data, each with two simple numerical variables seems to be a clear case in which to use a scatterplot
+[Why a scatterplot?]
+[What would be shown?]
+[log scale]
+
+\subsection{Creating an interesting chart}
+
+[[What concepts are needed to make the chart visually interesting?]]
 
 \section{The Document Object Model}
 
-The DOM is an interface that represents the structure of a webpage as a hierarchical tree of objects (an example is seen below in figure XX). When a browser loads an HTML document, it converts each element (such as paragraph or image blocks) into nodes in this tree. This structured representation allows programming languages like JavaScript to traverse and modify the content and layout of a webpage. Because the DOM is able to be be updated after its initial rendering, it can be coded to respond to user interactions like clicks or keystrokes.
+The DOM is an interface that represents the structure of a webpage as a hierarchical tree of objects (an example is seen below in \autoref{domtree}) When a browser loads an HTML document, it converts each element (such as paragraph or image blocks) into nodes in this tree. This structured representation allows programming languages like JavaScript to traverse and modify the content and layout of a webpage. Because the DOM is able to be be updated after its initial rendering, it can be coded to respond to user interactions like clicks or keystrokes.
 
 \begin{figure}[!ht]
 	\begin{center}
-		\woopic{domtree}{.6}
+		\woopic{domtree}{.7}
 		%\vspace{-.2 in}
 		\caption{An example of a DOM tree}\label{domtree}
 	\end{center}
@@ -16,8 +33,63 @@ The DOM is an interface that represents the structure of a webpage as a hierarch
 
 [[explain stuff about how the DOM affects visual elements]]
 
-\section{Scalable Vector Graphics}
+\section{Vector Graphics in web development}
 
-\subsection{D3 and using JavaScript for visualization}
+Vector graphics are a method of visual representation often used in web development. While more traditional raster graphics (used in image files like PNGs and JPGs) comprise a set pattern of individual pixels (known as a bitmap), vector graphics store \textit{objects}, which represent individual visual elements within an image. Because of this, they never appear pixelated, no matter the resolution of a screen or how far a user zooms in on them \cite{kirsanov_book_2021}.
 
-\section{Visualization principles}
+Another key advantage of vector graphics in a web development context is that they can be rendered directly by the DOM. If the program rendering the graphics have instructions on how to create and modify the necessary objects, it can essentially use the end user's browser to build the image while only needing to store the instructions, saving storage that might otherwise be used for holding much-larger raster image files \cite{meeks_d3js_2024}.
+
+As building images manually out of shapes and colors is inherently limiting, a common use case of vector graphics is in creating drawings, diagrams, and visualizations. One notable example of vector usage is on Wikipedia. While many traditional raster images exist on Wikipedia to depict people and objects, vector images are used to represent data using maps and charts. For example, pages concerning the results of elections often feature a map of the territory in question divided into sections, each of which is colored in to correspond with the political party that won the district. In these images, the structured nature of the image allows each element to easily be assigned to an object, which can then each be assigned attributes like colors. The resulting file is then able to be rendered into a PNG of any size for contexts which require a raster image.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{electionSVG}{.3}
+		%\vspace{-.2 in}
+		\caption{An vector graphic of the Ohio 2016 House elections, as used on Wikipedia\cite{noauthor_2016_2025}}\label{electionSVG}
+	\end{center}
+\end{figure}
+
+\subsection{The Scalable Vector Graphics format}
+
+Scalable Vector Graphics (SVG) is an open-source format for vector graphics. It was initially developed in the late-1990s to capitalize on the emergence of the Extensible Markup Language (XML) format as a method of data encoding. While a new, official version has not been released since 2003, SVG has outlasted several proprietary competitors such as Adobe Flash and is still maintained via newer partial frameworks and draft standards.
+
+Using the principles of SVG, we can create visualizations for data that are broadly customizable, don't take up space, and require minimal computing power to generate, all of which are favorable traits in a web development context. 
+
+\section{Using D3 and JavaScript for visualization}
+
+[[Introduce D3 and explain its function/significance]]
+
+D3 is a JavaScript framework for creating web-based data visualizations.
+
+\subsection{Using D3 within a frontend environment}
+
+[[Touch on the tradeoffs that come with using D3 within React]]
+
+D3 was developed in the early 2010s, before frontend frameworks like React became popular. As a consequence, they can come into conflict in certain ways, most notably in regard to the DOM. React, in particular, creates what it calls the Virtual DOM: a distinct representation of the actual DOM which React creates in JavaScript and updates directly. The Virtual DOM is linked to the "actual" DOM in such a way that it can display small changes to a page and that the actual DOM only needs to be updated when major changes occur \cite{adedeji_full-stack_2023}. If React is used in tandem with D3, however, this process comes into conflict with certain D3 modules that update the DOM directly \cite{meeks_d3js_2024}. In order to make use of the two, their potential for competing for DOM accessed must be addressed.
+
+There are multiple possible solutions for squaring the two libraries' use of the DOM, each with upsides and drawbacks:
+
+\subsubsection{Avoiding D3 modules that require DOM access}
+
+While many of the important modules in D3 directly modify the DOM, not all of them do. Notably, the modules for generating graph axis scales and specific shapes fall into this category, and can thus be used within a React project without interfering with React's control over the DOM. However, it means that module-enabled functions like binding data to SVG objects, listening for user-generated events, and rendering transitions are now effectively off-limits. While this is very limiting to the actual use of D3 in the project, the good news is that some of this functionality can still be carried out with React. Essentially, D3 can still perform calculations and generate shapes, while React takes those results and does the legwork of creating the visualization.
+
+The most pertinent responsibility of React with this method is generating the SVG objects to be used in the visualization -- since we're making a scatterplot, we need to create the axes the chart comprises and the circles representing each data point. While D3's tools to generate these shapes are unavailable to us, basic SVG objects like shapes can be created with 'vanilla' JavaScript code and can be rendered as such by every major browser.
+
+What we can still use D3 for here is calculating the scale of the axes -- how many ticks should each one show, and what numbers they'll display. Since D3 calculates the scales separately from rendering them anyway, all that has to change is to use vanilla JavaScript to render the axes under the specifications D3 generates. This method -- of using D3 only for background calculations -- loses out on some potential features, but is conceptually the easiest, especially for simple charts.
+
+\subsubsection{Granting D3 DOM access with hooks}
+
+[[Complex, hurts performance]]
+
+While the previous strategy gave React full control of the DOM by ignoring any D3 modules that directly manipulate it, this strategy sees React effectively delegating full control over a specific portion of the DOM to D3 to create and render the visualization. Due to the disconnect between React and D3's methods, control will be passed from the former to the latter via Hooks -- a tool used by React to manage the state of the application.
+
+[[Hook Primer]]
+
+\subsubsection{Granting specific access to certain D3 features}
+
+[[Helpful for curves, I think]]
+
+\subsubsection{Choosing a method}
+
+[[the first one]]
+

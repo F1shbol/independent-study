@@ -1,6 +1,6 @@
 \chapter{Full stack web design}\label{fullstack}
 
-This section will introduce the concept of the tech stack and discuss concepts of full-stack web development and their relevance to this project's goals. Starting with a primer on the basics of web applications and information transfer over the internet and following with sections on conceptual differences between single- and multi-page applications, concepts and examples in the software architecture of web apps, and concluding with an overview of the deployment process and the role of containerization. 
+This section will introduce the concept of the tech stack and discuss concepts of full-stack web development and their relevance to this project's goals. Starting with a primer on the basics of web applications and information transfer over the internet and following with sections on conceptual differences between single- and multi-page applications, concepts and examples in the software architecture of web apps, and concluding with [[an overview of the deployment process and the role of containerization. ]] [[the logic behind constructing a tech stack for this project]]
 
 \section{The Tech Stack in Web Development}
 
@@ -163,10 +163,14 @@ Flux was designed with a specific use case in mind: managing React components si
 
 % FIT THESE IN WHEREVER THEY END UP
 
-\section{Containerization and deployment}
+\section{Containerization and deployment [[move to future work]]}
 
 When applications move from the development to the deployment stage, the components of an application must have concrete ways of interacting with each other and the hardware (usually servers) required to become accessible to end users. A popular solution in recent times is containerization\cite{adedeji_full-stack_2023}.
 
 Containerization is a way of packaging an application together with everything it needs to run, like its code, system libraries, and configurations, into a single unit that can run on a physical or a virtual machine (VM). By existing at the OS level, containerization allows a developer to run multiple containers inside a single OS instance. While it reduces overhead and processing power, it also makes them much faster to start and more resource-efficient.
 
 Tools like Docker build these containers from reproducible definitions (which they call Dockerfiles), ensuring the application runs the same way on different machines, maintaining consistency in development, testing, and deployment. Containerization tools allow teams to ship applications as portable, self-contained artifacts that can run reliably across different environments such as local servers or cloud platforms.
+
+\section{Building a tech stack for this project}
+
+[[Going forward, assume we're using React]]
