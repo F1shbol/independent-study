@@ -71,8 +71,9 @@ function App() {
 function FileUploader() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
-  const [content, setContent] = useState("")
-  // const [filepath, setFilepath] = useState("") 
+  const [content, setContent] = useState("");
+
+  const [query, setQuery] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -81,6 +82,10 @@ function FileUploader() {
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
+
+  // const handleQuerySubmit = (e) => {
+  //   setQuery(e.target.value);
+  // };
 
   // Upload to Flask backend
   const handleUpload = async () => {
@@ -110,20 +115,39 @@ function FileUploader() {
       setMessage(response.data.message);
 
       setContent(response.data.content);
-      // setFilepath(response.data.jsonpath);
       filename = response.data.jsonname;
     } catch (error) {
       console.error(error);
       setMessage("Upload failed." + error);
     }
-    // const starter = "http://127.0.0.1:5000/api/";
-    // const dataURL = starter + filepath;
-    // const dataURL = `http://127.0.0.1:5000/api/${filepath}`;
-    // const dataURL = starter.concat(filepath);
     
     const dataURL = `http://127.0.0.1:5000/api/${filename}`;
     
     console.log("requestURL", dataURL);
+    
+    let mounted = true;
+    d3.json(dataURL).then(data => {
+      console.log("data", data);
+
+      if (mounted) {
+        setData(data);
+        setLoading(false);
+      }
+    });
+  };
+
+  const handleBypass = async () => {
+    if (query === "") {
+      setMessage("Please enter a query first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("query", query); // <-- must match Flask key: request.files['file']
+    
+    const dataURL = `http://127.0.0.1:5000/api/${query}`;
+    
+    console.log("requestURL (bypass)", dataURL);
     
     let mounted = true;
     d3.json(dataURL).then(data => {
@@ -145,6 +169,17 @@ function FileUploader() {
       <br /><br />
 
       <button onClick={handleUpload}>Upload</button>
+
+      <br /><br />
+
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search..."
+      />
+
+      <button onClick={handleBypass}>Go</button>
 
       <p>{message}</p>
 
