@@ -4,20 +4,30 @@ Once data about each of the user's listened artists has been collected by the sc
 
 \section{Visualization principles}
 
-[[Overview of data visualization as a subject]]
+Data visualization is the practice of representing data in graphical or visual forms to communicate patterns, trends, and relationships to the viewer. By mapping quantitative or categorical variables to visual properties such as position, color, and shape, visualization techniques enable more efficient interpretation than textual or table-based representations alone. Within the context of web development, data visualization is commonly implemented using browser-based technologies like HTML, CSS, and JavaScript. These standards support the creation of visualizations that can respond to user input, update in real time, and integrate with remote data sources. Creating quality visualizations requires considering design principles like clear labeling, data integrity, and usability, and ensuring they are accurate, interpretable, and aligned with the intended communicative goals.
 
 \subsection{Creating an informative chart}
 
-[[What concepts are needed to make the data clear and understandable?]]
+In the scope of this project, insights about a user's music listening history are derived from processes run on and parallel to the original data. A user's history shows us every track they played, the artist, the album, and the timestamp. Once a list of all the artists in a given history is created, the data on how popular that artist is (in terms of recent daily listeners) can be gathered. With this, we now have the two metrics that would seem to determine how mainstream a user's listening habits are: for every artist in their history, how many times the user listened to them, and how popular they are over the past week. Charting many points of data, each with two simple numerical variables seems to be a clear case in which to use a scatterplot.
 
-In the scope of this project, insights about a user's music listening history are derived from processes run on and parallel to the original data. A user's history shows us every track they played, the artist, the album, and the timestamp. Once a list of all the artists in a given history is created, the data on how popular that artist is (in terms of recent daily listeners) can be gathered. With this, we now have the two metrics that would seem to determine how mainstream a user's listening habits are: for every artist in their history, how many times the user listened to them, and how popular they are over the past week. Charting many points of data, each with two simple numerical variables seems to be a clear case in which to use a scatterplot
-[Why a scatterplot?]
-[What would be shown?]
-[log scale]
+The key purpose of a scatterplot is to have a visualization in which the data points are primarily being compared to each other, with the axes providing context about the nature of the distribution as a whole. One drawback of using average daily listeners as a metric for how popular an artist is that it does not lend itself to providing context as to what is a particularly high or low number. For tools that use total lifetime listeners the process is simple, as the top spot has been retained by Coldplay for some time.
 
-\subsection{Creating an interesting chart}
+Another potential consideration in creating a chart is the distribution of artists' average daily listeners. While the most popular artists at a given time usually hover around 500,000 average daily listeners over the course of a week, the vast majority of artists fail to clear the 100,000 mark, with well-known artists like Green Day and The Beatles tend to orbit 60,000 and 80,000, respectively. This means that even if a user had a fairly even distribution of popular and obscure artists in their listening history, the data would still be clumped toward the bottom. A potential solution for this issue is in changing the scale of the y-axis from linear to logarithmic, as shown in \autoref{linvslog}. 
 
-[[What concepts are needed to make the chart visually interesting?]]
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{linvslog}{.7}
+		%\vspace{-.2 in}
+		\caption{An comparison of linear and logarithmic y-axes containing the same data}\label{linvslog}
+	\end{center}
+\end{figure}
+
+In the line charts shown, the lines in the logarithmically scaled graph are shaped quite differently than those in its linearly scaled counterpart, engaging in a visual trade-off in an attempt to improve the readability of the chart. While the relationship between the two functions is less intuitive -- the lines seem close together while being thousands of units apart -- in return the blue line is far easier to reference on the axis, giving a clearer impression of what its value is compared to the linear chart, where its endpoint inhabits a large space between two ticks. Depending on how pronounced the clumping of the data is toward the bottom of a dataset, a logarithmic scale could be a better option for making each individual data point readable, while sacrificing some of the intuitive understandability of the relationship between many data points.
+
+%maybe come back for this later
+%\subsection{Creating an interesting chart}
+
+%[[What concepts are needed to make the chart visually interesting?]]
 
 \section{The Document Object Model}
 
@@ -30,8 +40,6 @@ The DOM is an interface that represents the structure of a webpage as a hierarch
 		\caption{An example of a DOM tree}\label{domtree}
 	\end{center}
 \end{figure}
-
-[[explain stuff about how the DOM affects visual elements]]
 
 \section{Vector Graphics in web development}
 
@@ -57,13 +65,11 @@ Using the principles of SVG, we can create visualizations for data that are broa
 
 \section{Using D3 and JavaScript for visualization}
 
-[[Introduce D3 and explain its function/significance]]
+D3.js (standing for Data-Driven Documents and often abbreviated to "D3") is an open-source JavaScript library for producing web browser-based data visualizations in web browsers using standards such as HTML and SVG. Its primary purpose is to bind structured data to elements in the DOM tree and apply transformations that represent the data visually. The library provides functions for tasks such as data loading, layout computation, and animated transitions, allowing developers to construct charts and other interactive graphics that are user-interactive. Rather than supplying predefined chart types, D3 operates at a low level, requiring each element be specified and designed by the code.
 
-D3 is a JavaScript framework for creating web-based data visualizations.
+While its comparative complexity to other popular data visualization software and technologies gives it a steep learning curve, its extensive flexibility appeals to statisticians, and its compatibility with web standards via JavaScript makes makes it useful to web developers.
 
 \subsection{Using D3 within a frontend environment}
-
-[[Touch on the tradeoffs that come with using D3 within React]]
 
 D3 was developed in the early 2010s, before frontend frameworks like React became popular. As a consequence, they can come into conflict in certain ways, most notably in regard to the DOM. React, in particular, creates what it calls the Virtual DOM: a distinct representation of the actual DOM which React creates in JavaScript and updates directly. The Virtual DOM is linked to the "actual" DOM in such a way that it can display small changes to a page and that the actual DOM only needs to be updated when major changes occur \cite{adedeji_full-stack_2023}. If React is used in tandem with D3, however, this process comes into conflict with certain D3 modules that update the DOM directly \cite{meeks_d3js_2024}. In order to make use of the two, their potential for competing for DOM accessed must be addressed.
 
@@ -79,17 +85,17 @@ What we can still use D3 for here is calculating the scale of the axes -- how ma
 
 \subsubsection{Granting D3 DOM access with hooks}
 
-[[Complex, hurts performance]]
-
 While the previous strategy gave React full control of the DOM by ignoring any D3 modules that directly manipulate it, this strategy sees React effectively delegating full control over a specific portion of the DOM to D3 to create and render the visualization. Due to the disconnect between React and D3's methods, control will be passed from the former to the latter via Hooks -- a tool used by React to manage the state of the application.
 
-[[Hook Primer]]
+A key building block of React apps is the function component -- a JavaScript function with the ability to receive data through arguments known as props and return renderable HTML elements in the form of JavaScript XML. Hooks are a way for React components to access the application's state outside of the normal input-output system of props and return statements, making it easier to link components to one another and break up separate responsibilities among them. React defines a number of built-in hooks, and allows users to codify their own. For example, the useState hook stores data by initializing a variable and a function to update its value, essentially being a way to create global variables in the application.
 
-\subsubsection{Granting specific access to certain D3 features}
+To grant D3 access to the DOM without impeding React's management of the virtual DOM, we'll need two built-in hooks: useEffect and useRef. useEffect is used to specify a set of actions to take after a component renders. It takes the form of a function can be set to depend on certain conditions being met before running; if no conditions are specified, however, it simply runs when the component is rendered. useEffect can be used to connect to external systems, as we're doing here, calling methods on them and making sure the state of each is in line with the other. This is done in conjunction with useRef, which holds onto a value that isn't needed for rendering, and will not change if the page is refreshed. In our case, useRef would be used to hold onto an entire node of the DOM tree, effectively marking it to be left alone by React while leaving it open for D3 methods to be able to operate on. In this way, D3 and its modules can operate on the section of the DOM linked to by the ref unimpeded.
 
-[[Helpful for curves, I think]]
+The downside to this method, however, is that bypassing React's management of D3's allocated DOM node prevents React from optimizing it. React's management of the virtual DOM is central to the framework's functionality, and avoiding it invites potential performance issues. In smaller applications where the chart may be the central focus, it can make sense to bypass the virtual DOM for D3 to access, but in a larger, more complex application, the hit to performance can outweigh the benefit\cite{meeks_d3js_2024}. Thus, the context of the application should be taken into account and weighed against the potential benefit of full D3 access.
 
 \subsubsection{Choosing a method}
 
-[[the first one]]
+In reality, there is more than one way to allocate DOM access to D3 -- rather than encapsulating the entire chart within the useRef hook, smaller sections can be allocated, allowing D3 to perform specific tasks, like adding transitions to elements switching from displaying one dataset to another. The overall question, however, remains largely the same: is it worth it for React to allocate portions of the DOM to D3 in order to make use of more features?
+
+In the case of this project, the answer seems to be 'no'. By choosing a relatively simple type of visualization in the scatterplot and not relying on any transitions or animations of the data, we avoid the need for most D3 modules altogether. Despite building a small-scale application that would likely not be impacted by the performance hit of React surrendering a portion of the DOM, the benefits not being evident suggest that relying on vanilla JavaScript for the creation of the SVG objects while D3 handles background calculations like the generation of axes is the right way to go.
 

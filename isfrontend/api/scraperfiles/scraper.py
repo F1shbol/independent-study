@@ -9,11 +9,12 @@ import requests
 from pandas import DataFrame
 from time import sleep
 import os
+from tinydb import TinyDB, Query
 
 # Command to create a single executable
 # python -m PyInstaller -F scraper.py
 
-def startScraper(file_path, UPLOAD_FOLDER):
+def startScraper(file_path, UPLOAD_FOLDER, db):
     # options = welcome()
 
     # gets the lists returned by linkify.py
@@ -34,6 +35,16 @@ def startScraper(file_path, UPLOAD_FOLDER):
     idx = 1
 
     for link in links:
+        dbCheck = Query()
+        dbList = db.search(dbCheck.artist == names[idx-1])
+        if (len(dbList) > 0):
+            oneweek.append(dbList[0]['x1w'])
+            onemonth.append(-1)
+            threemonths.append(-1)
+            sixmonths.append(-1)
+            idx += 1
+            continue
+
         # print("running link", idx, "of", len(links)) # progress meter
         ffc_response = requests.get(link) # gets raw code from a site and stores it in a variable
         adp_soup = Soup(ffc_response.text, "html.parser") # turns raw code into a Soup object
@@ -59,6 +70,8 @@ def startScraper(file_path, UPLOAD_FOLDER):
         onemonth.append(round(lastMonth[[1]].mean().iloc[0], 3))
         threemonths.append(round(last3Months[[1]].mean().iloc[0], 3))
         sixmonths.append(round(df[[1]].mean().iloc[0], 3))
+
+        db.insert({'artist': names[idx-1], 'x1w': round(lastWeek[[1]].mean().iloc[0], 3)})
 
         sleep(3)
         idx += 1

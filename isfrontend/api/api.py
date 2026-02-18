@@ -4,6 +4,7 @@ from flask_cors import CORS
 import json
 import os
 from scraperfiles.scraper import startScraper
+from tinydb import TinyDB, Query
 
 # import pandas as pd
 
@@ -14,6 +15,9 @@ CORS(app)
 @app.route('/api/time')
 def get_current_time():
     return {'time': time.time()}
+
+db = TinyDB('./models/db.json')
+# db.truncate()
 
 # (Optional) where to save uploaded files
 UPLOAD_FOLDER = 'uploads'
@@ -42,7 +46,7 @@ def upload_file():
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(file_path)
 
-        resultDict = startScraper(file_path, UPLOAD_FOLDER)
+        resultDict = startScraper(file_path, UPLOAD_FOLDER, db)
 
         textOutput = resultDict["output"]
         jsonfile = resultDict["jsonfile"]
