@@ -8,12 +8,92 @@ The most common form of database is the relational database. Invented in and pop
 
 Every table includes a primary key: a field unique to its table that ensures each row can be referenced unambiguously. Relationships between tables are established through foreign keys, which associate one table’s records to those in another via the first table's primary key. This structure allows data to be stored in an organized form that reduces redundancy and maintains consistency.
 
-Functionally, relational databases use Structured Query Language (SQL) to define, manipulate, and query data. SQL is used to insert, update, delete, and retrieve information in a database. The relational model supports strong data integrity, which makes its databases widely used in applications where accuracy is essential.
+Functionally, relational databases use Structured Query Language (SQL) to define, manipulate, and query data. SQL is used to insert, update, delete, and retrieve information in a database. The relational model supports strong data integrity, which makes its databases widely used in applications where accuracy is essential. Important aspects of relational databases that serve to support data integrity and maintain transaction control are referred to under the acronym ACID:
+
+\begin{itemize}
+	\item \textbf{Atomicity} means that transactions are 'all or nothing' -- if a transaction cannot be completed in its entirety due to failure at any point, it is rolled back and not undertaken at all. Atomic transactions protect and secure data, but are computationally expensive and difficult to test.
+	\item \textbf{Consistency} ensures that the state of a database is never captured in transition, and that database accuracy is never corrupted by an illegal transaction. 
+	\item \textbf{Isolation} means that transactions are executed statelessly, so concurrent transactions do not interfere with each other.
+	\item \textbf{Durability} guarantees that successful transactions will remain saved within the database in the even of a system failure of crash.
+\end{itemize}
+
+ACID systems, as they are called, prioritize the consistency and integrity of data above all else and thus must take into account all possible sources of failure into account
+
+\subsection{Components of web-based relational databases}
+
+Many web applications are data-driven -- existing to store, generate, or otherwise process data for a user. There are several technologies and development strategies involved in integrating databases and database systems into web applications and their codebases.
+
+A relational database management system (RDBMS) is software that persistently stores the contents of a relational database in a system and facilitates the management of its contents and structure. Many RDBMS design their databases to interact with software through the client-server model in a manner similar to how users and web servers interact over the internet -- the database functions as a server with its own address and ports that it uses to listen for commands from the client. (Not all database managers work in this way, however. Ones that do not use a client-server model are discussed in \autoref{onefile}.)
+
+Like web servers, these database servers communicate with clients using an API. In its most basic form, a database's API lets it receive low-level SQL queries and return appropriate responses. These APIs are often separate from the RDBMS itself, but are tailored to each one (e.g. mysql-python and PyMySQL are APIs that work with MySQL) \cite{adedeji_full-stack_2023}. 
+
+Some applications use an intermediary software or library to facilitate interaction with the database and its API called an object-relational mapper (ORM). An ORM works by representing aspects of a database in the style of an object-oriented programming language, and translating operations on such objects into commands the database recognizes. For example, an ORM like SQLalchemy works with Python code and uses operations it calls "read", "insert", "update", and "delete", among many others. These commands are not SQL themselves and would not be understood by a database's API, but are interpreted and transformed by SQLalchemy into a form the API can understand and execute. While both APIs and ORMs serve as intermediaries between an application and a database, ORMs are essentially optional and serve as a layer of abstraction to simplify database processes to programmers and users by presenting them through an object-oriented lens.
+
+\subsection{Normalization strategies}
+
+The design and organization of a relational database is important in determining its potential usefulness -- how individual pieces of data are labeled and connected affects how they must be entered into the database and what the queries must look like to retrieve them. \textit{Normalization} is the process of organizing a database to minimize redundancy and dependency while maximizing data integrity and consistency.
+
+Normalization is often measured through a presence (or lack thereof) of certain traits in a database. For example, a very common and beneficial trait for a database to have is when every table has a primary key. This ensures that each of the items in a table can be identified -- fairly essential if you want to retrieve any of the data! A database table with this trait is seen as measurably more normalized than one without it.
+
+There are many of these normalization traits which are commonly organized into "forms" -- groups of traits which make up ascending levels of normalization \cite{hao_grokking_2025}. For example, the lowest level of normalization, First Normal Form (1NF), requires tables to have a primary key (as previously mentioned), as well as other fairly essential traits like not mixing data types within a single attribute and not storing multiple distinct values in a single field. Higher levels of normalization impose further restrictions on the traits database tables can have: Second Normal Form (2NF) requires non-key attributes in a table to depend on the entire primary key -- if an attribute depends on only part of a primary key, that could indicate it would be better represented in a separate table; Third Normal Form (3NF) goes a step further and requires those same non-key attributes to \textit{only} depend on the key -- if an attribute indirectly depends on the key and directly depends on another attribute, those attributes are also likely to be better represented in their own separate table.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{normalforms}{.9}
+		%\vspace{-.2 in}
+		\caption{A representation of the problems addressed by the first three normal forms}\label{normalforms}
+	\end{center}
+\end{figure}
+
+The levels of normalization continue beyond 3NF: further levels include Boyce-Codd Normal Form (BCNF), a slight alteration of 3NF in which every attribute (key or not) must depend on the primary key; and Fourth to Sixth Normal Forms (4NF, 5NF, and 6NF, respectively). Each level solves a different potential problem caused by lack of normalization, though as the levels increase the problems get more complex and less likely to appear in simple or common databases. Thus, the first three normal forms are the ones most commonly described and adhered to.
 
 \section{Non-relational databases and NoSQL}
 
-Relational databases offer a number of advantages, but some contexts do not require all of them and would benefit from a system of database design exchanging unnecessary features for increased resource efficiency and reduced overhead. Non-relational databases (often called NoSQL to emphasize the lack of support for SQL queries relational databases use) lack the schemas relational databases use to define relationships and are often used to handle semi-structured data that needs more flexibility to store \cite{faulkes_sql_nodate}.
+Relational databases offer a number of advantages, but some contexts do not require all of them and would benefit from a system of database design exchanging unnecessary features for increased resource efficiency and reduced overhead. Non-relational databases exist for this purpose, and usually handle semi-structured or unstructured data that needs more flexibility to store \cite{faulkes_sql_nodate}. The term often used to describe non-relational databases is "NoSQL", a broad term used to generally describe the variety of non-relational techniques that can be used to form a database. NoSQL as a concept began to gain traction in the late-2000s and early 2010s among developers looking for alternatives to traditional relational databases \cite{kelly_making_2013}.
 
-\section{Something about one-file vs distributed nodes}
+NoSQL as a term represents a variety of system styles, but usually refers to one of the following four:
 
-\section{Normalization strategies}
+\begin{itemize}
+	\item \textbf{Key-value stores} hold data in simple key-value pairs which are queried and retrieved via the key. The nature of the value can be flexible, and its simplicity reduces computational overhead
+	\item \textbf{Column family stores} uses tables similarly to relational databases, but preserves the order of the entry rows added, allowing them to orient their queries by column, speeding up data retrieval. 
+	\item \textbf{Graph stores} store data as a collection of nodes and relationships an dare used when the nature or content of the data stored is less important than the web of connections between items
+	\item \textbf{Document store}, which stores data directly in formatted documents like JSON or XML. documents are independent and no foreign keys exist in the system.
+\end{itemize}
+
+In contrast to the ACID model used by relational databases and their managers, NoSQL systems do not prioritize data consistency and integrity above all other considerations. Their alternative to the concept of ACID is BASE, a backronym standing for:
+
+\begin{itemize}
+	\item \textbf{BAsic availability} means that the system is allowed to be temporarily inconsistent in order to maintain a constant state of partial availability, meaning that the system is always "basically available"
+	\item \textbf{Soft-state} allows for changes in data mid-use and some level of inaccuracy to reduce the amount of consumed resources
+	\item \textbf{Eventual consistency} is the idea that once all outstanding processes are executed, the system will reach a consistent state.
+\end{itemize}
+
+NoSQL is not a single type of system, but rather a variety of them, all connected by serving as alternatives to the traditional relational database model and prioritizing benefits like availability over strict accuracy and consistency.
+
+\section{One-file and embedded databases}\label{onefile}
+
+In contrast to the client-server database model, in which a database functions as a separate system from the web server and communicates with it through an API, embedded databases are integrated within an application and thus can be directly queried and controlled by it. Many simply store their information in a single database file. This removes a significant amount of complexity from a system -- instead of needing to handle the multitasking and inter-process communication of a client-server database system, embedded databases require little more than the ability to read and write to somewhere in storage.
+
+The most popular embedded database system is SQLite, a software library which uses a relational database model and is designed to be able to be integrated into a wide range of software environments, usually directly into an executable \cite{kreibich_using_2010}.
+
+\begin{figure}[!ht]
+\centering
+\begin{subfigure}[b]{0.4\textwidth}
+	\centering
+	\woopic{clientserverdb}{.6}
+	\caption[Large conch goes in the List]{Client-server database}\label{fig3:left}
+\end{subfigure}
+\qquad
+\begin{subfigure}[b]{0.4\textwidth}
+	\centering
+	\woopic{embeddeddb}{.8}
+	\caption[Small conch goes in the List]{Embedded database}\label{fig3:right}
+\end{subfigure}
+\caption{Comparing the client-server database model with the embedded model}\label{fig3}
+\end{figure}
+
+The key drawback to this style of database, however, lies in its specialty in localization. Embedded databases are not well suited to act as centralized databases, where multiple client machines are able to mace concurrent requests. One-file databases like SQLite are especially risky in this regard, as two concurrent requests operating on the same single file can result in lost transactions, or worse: corrupting the entire file and breaking the connection between the database and the application.
+
+\section{Evaluating potential database systems}
+
+In deciding which database system is best for this application, it is important to define or at least speculate on the context  in which it will be used. Currently, we will assume the primary function of the application will be to take a user's one-week listening history as input, scrape each present artist's last.fm page, and determine the average daily listeners for each over the past week of available data.

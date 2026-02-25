@@ -4,7 +4,11 @@ from flask_cors import CORS
 import json
 import os
 from scraperfiles.scraper import startScraper
+
 from tinydb import TinyDB, Query
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from datetime import timedelta
 
 # import pandas as pd
 
@@ -16,8 +20,17 @@ CORS(app)
 def get_current_time():
     return {'time': time.time()}
 
+london_tz = ZoneInfo("Europe/London")
+today_london  = str(datetime.now(london_tz).date())
+
 db = TinyDB('./models/db.json')
-# db.truncate()
+
+dbCheck = Query()
+dbList = db.search(dbCheck.date.exists())
+if (len(dbList) == 0 or dbList[0]['date'] != today_london):
+    db.truncate()
+    db.insert({'date': today_london})
+
 
 # (Optional) where to save uploaded files
 UPLOAD_FOLDER = 'uploads'
