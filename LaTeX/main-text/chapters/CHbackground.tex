@@ -1,7 +1,9 @@
 %!TEX root = ../main.tex
 \chapter{Background}\label{bg}
 
-\section[APIs]{Web APIs}\label{sec:api}
+This section will discuss multiple topics pertaining to the creation of a web scraping-focused application. First discussed will be the Application Programming Interface (API), a concept crucial to the scope of the project and important also to web and software development as a whole. Next discussed will be the concept of web scraping, including the mechanisms used to perform it, an example of the concept in action, and potential ethical considerations.
+
+\section[Application Programming Interfaces (APIs)]{APIs}\label{sec:api}
 
 An Application Programming Interface (API) is a connection between two computer systems, as opposed to a connection between a system and a user. The term can be used to describe both how a software makes its output available to external programs, and the ways in which internal software components make information and outputs available to other components. In the context of web and internet services, web APIs accept, handle, or distribute the content of a website or web app. Unlike other, internal APIs, web APIs are usually designed to be exposed over a network and used remotely by multiple users.\cite{geewax_api_2021}
 
@@ -24,7 +26,7 @@ Web APIs often communicate, like traditional webpages, via the Hypertext Transfe
 Responses similarly contain a mix of required and optional components that form a consistent structure. They contain the following:
 
 \begin{itemize}
-	\item A status code, indicating if the request was successful, if so what was accomplished and if not, why not
+	\item A status code, indicating if the request was successful -- if so, what was accomplished and if not, why not
 	\item A status message, a non-authoritative short description of the status code
 	\item The version of the HTTP protocol they follow
 	\item Optional HTTP headers, like those for requests
@@ -35,23 +37,51 @@ REST (Representational State Transfer) is a style of API design to make systems 
 
 \subsection{Other API structures}
 
-Though the structure is extremely popular and often-used, REST is not the only structural option for designing an API. Other architectures exist to cover different use cases and different methods of sending and receiving information.
-
-\subsubsection{Event-driven architecture}
-
-Event-driven architecture (EDA) refers to APIs where the server (or other event provider) sends out messages or signals for clients to receive on open channels. It is, in part, a reversal of the traditional REST structure, as the client waits for a server to send a specific form of information rather than the other way around. This structure is often used on internal APIs
+Though the structure is extremely popular and often-used, REST is not the only structural option for designing an API. Other architectures exist to cover different use cases and different methods of sending and receiving information between client and server entities.
 
 \subsubsection{HTTP Server-Sent Events}
 
-Similarly, Server-sent events (SSE) also involve a client listening for data from a server, but often involve a consistent stream of information like stock market figures. This architecture is useful when data is updated often enough that making individual requests would become overly-resource-intensive
-
-\subsubsection{WebSockets}
-
-Like SSE, WebSockets allow for a constant stream of data, but allow it to flow bidirectionally, meaning textual and binary data is shared in a constant stream between client and server. This method can become very resource-intensive, so care must be taken in what information is allowed to be sent over the connection.
+Server-sent events (SSE) involve a client listening for data from a server and often involve a consistent stream of information. It is, in part, a reversal of the traditional REST structure, as the client waits for a server to send a specific form of information rather than the other way around. This architecture is useful when data is updated often enough that making individual requests would become overly-resource-intensive. In practice, a client sends a message to a server indicating that it is ready to receive events. Events are then sent from the server to the client at the frequency the server chooses. If and when the stream has to end, the server must communicate this fact to any clients receiving messages from it. In some systems a client may send a communication to the server that indicates the server's task is finished and to cease function, but the final signal that a stream is closed must come from the server to adequately notify the clients connected to it \cite{noauthor_using_2025}.
 
 \begin{figure}[!ht]
 	\begin{center}
-		\woopic{websockets}{0.8}
+		\woopic{ssediagram}{0.25}
+		%\vspace{-.2 in}
+		\caption{A diagram of the life cycle of a Server-Side Events process}\label{ssediagram}
+	\end{center}
+\end{figure}
+
+Some examples of SSE are often seen in public in the form of informational tickers -- scrolling lines of text dispensing a slow, constant stream of information. These tickers are usually displaying live, up-to-the-minute readouts on topics like stock prices, sports scores, and breaking news -- some of which change at regular intervals and some of which do not. Tickers are an obvious "real-world" example, but SSE-based connections need not be seen directly by humans at all. Other software can be listening for events and take action beyond simply displaying the information to a user. Think a financial group creating a program to take a certain action when the price of a volatile product or stock behaves in a certain way. SSE optimizes this style of communication by clearly delineating the different purposes of the client and server, allowing them to perform no more than their basic, necessary functions.
+
+\subsubsection{Event-driven architecture}
+
+Event-driven architecture (EDA) refers to APIs where the server (or other event provider) sends out messages or signals for clients to receive on open channels. It differs from SSE in that the clients do not typically interact with the server and do not need to notify servers of their presence -- instead, the server fulfills its function by sending out events regardless of which specific clients may or may not be listening. This simplifies the role of the client, as its only role is to 'tune in' to events from the server at its leisure. This contrasts with SSE, where the client must maintain an active role in at least notifying the server of its presence. This structure is often used on internal APIs, meaning communication that occurs within a single piece or package of software rather than across multiple or over the internet as a web API. Depending on whether an EDA system is internal or not affects the specific methods with which it connects its clients to its servers.
+
+Focusing on the use of EDA in an internal manner within a single, enclosed piece of software, a separate component is needed between the client and server components to facilitate their communication. In this context, such a component is known as a message broker. Message brokers facilitate communication between multiple systems regardless of the implementation of each system or the communication protocol they use. Information is received, translated if necessary, and routed to the appropriate destination. Naturally, these brokers are not a concept unique to the EDA model -- they are rather a type of middleware that exists to couple multiple discrete systems together (the concept of middleware and its role in web development will be explored further in \autoref{fullstack}). Message brokers are nonetheless a more important aspect of EDA because the server's lack of knowledge as to where the messages need to be physically sent often requires an intermediary to perform this routing.
+
+There are two different broad styles message brokers use to facilitate and handle communications. The one used by EDA systems is "Publish/subscribe messaging", where servers send messages to the broker with organizational labels such as tags or categories, and clients listen for messages that match whatever combination of labels (if any) they wish to receive \cite{ibm_what_2021}. An example of a broker operating in this style is shown in \autoref{edabroker}.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{edabroker}{0.55}
+		%\vspace{-.2 in}
+		\caption{A diagram of the role of an event broker in communication between software components using the Publish/subscribe model}\label{edabroker}
+	\end{center}
+\end{figure}
+
+The other style a message broker can use is "Point-to-point messaging", where each server message is intended for a specific client, and is to be consumed only once. The broker's function in this style is to route (and possibly translate) the message from the server to the correct client, whether the routing information is given beforehand by the server, comes from the client, or is stored or generated elsewhere.
+
+\subsubsection{WebSockets}
+
+Like SSE, WebSockets allow for a constant stream of data, but allow it to flow bidirectionally, meaning textual and binary data are able to be sent and received by the client and server at all times., as long as the connection is open. This method can become very resource-intensive, so care must be taken in what information is allowed to be sent over the connection.
+
+Most use cases for WebSockets involve simple text-based data that needs to be updated very frequently. Examples include ride-share apps that let drivers and riders track each other's location for a rendezvous, instant messaging services that notify recipients immediately when new messages are received, and multiplayer video games, where players' inputs must be tracked and managed while being simultaneously integrated with other players in the same virtual environment.
+
+\autoref{websockets} represents an example of the start-to-finish process of a WebSockets connection. Because the client and server are both equally responsible for the sending and receiving of data (though one might have a greater responsibility than the other), they must both apprise the other of their respective presence and readiness to open a connection. Similarly, whichever side that is responsible for the cessation of the connection must notify the other so the two sides can take the appropriate measures.
+
+\begin{figure}[!ht]
+	\begin{center}
+		\woopic{websockets}{0.25}
 		%\vspace{-.2 in}
 		\caption{A diagram of a sustained bidirectional connection using WebSockets}\label{websockets}
 	\end{center}
@@ -93,11 +123,11 @@ An important permutation of this concept is the ability to find the links that a
 	\end{center}
 \end{figure}
 
-Unlike the other two outer <td> tags, this section does not encapsulate its data in a <table> tag. After a few <h2> (heading) and <ul> (non-enumerated list) tags to display the page info, the page separates each entry into <p> (paragraph) tags, which by default display the text within each of them in the order they appear in the HTML document. The <p> tags contain more tags delineating the name of the album, the label and release year, the text of the review, and the rating (two asterisks for the displayed entry, indicating an above-average grade on Christgau's esoteric scale).
+Unlike the other two outer <td> tags, this section does not encapsulate its data in a <table> tag. After a few <h2> (heading) and <ul> (non-enumerated list) tags to display the page info, the page separates each entry into <p> (paragraph) tags, which by default display the text within each of them in the order they appear in the HTML document. The <p> tags contain more tags delineating the name of the album, the label and release year, the text of the review, and the rating (two asterisks for the displayed entry, indicating an above-average grade on Christgau's esoteric scale). \autoref{roots} illustrates this structure.
 
 \begin{figure}[!ht]
 	\begin{center}
-		\woopic{roots}{.6}
+		\woopic{roots}{.95}
 		%\vspace{-.2 in}
 		\caption{Structured data within a webpage}\label{roots}
 	\end{center}
@@ -117,6 +147,6 @@ Because websites are typically designed for users to access and view them in a w
 
 First, there are concerns of server load. Scrapers request webpages far faster than humans can usually read them, so requesting many pages from the same site will lead to your scraper demanding an outsized share of the processing power a site can provide. Second, some site owners might not want data contained on their site to be collected and stored, even if on the surface it is accessible. In the early days of web development, these concerns led to the creation of a web design standard: robots.txt\cite{mitchell_web_2015}.
 
-robots.txt is a simple text file that most websites will store in their root directory (i.e., the robots.txt file for example.com could be found at example.com/robots.txt). Its purpose is to tell web scrapers which pages on the site, if any, they are allowed to access. Some sites don't care and leave the file empty, some are very restrictive and only allow access to search engines like Google, others operate somewhere in between. In legal cases involving unwanted web scraping, courts have generally interpreted the lack of a restriction in a site's robots.txt file as consent for a web scraper to access that part of the site\cite{mitchell_web_2015}. While workarounds certainly exist, many popular consumer web scraping tools will not allow you to access sites restricted by a robots.txt file.
+robots.txt is a simple text file that most websites will store in their root directory (i.e., the robots.txt file for example.com could be found at example.com/robots.txt). Its purpose is to tell web scrapers (and other autonomous agents outside the scope of this paper) which pages on the site, if any, they are allowed to access. Some sites don't care and leave the file empty, some are very restrictive and only allow access to search engines like Google, others operate somewhere in between. In legal cases involving unwanted web scraping, courts have generally interpreted the lack of a restriction in a site's robots.txt file as consent for a web scraper to access that part of the site\cite{mitchell_web_2015}. While workarounds certainly exist, many popular consumer web scraping tools will not allow you to access sites restricted by a robots.txt file.
 
 Last.fm's robots.txt file prohibits scrapers from accessing users' listening history and data, but does \textit{not} prohibit access to the profile pages where the charts we want to access are stored. This means that the project is in the clear functionally, ethically, and legally until further notice.
