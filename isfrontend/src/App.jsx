@@ -143,7 +143,7 @@ function FileUploader() {
     }
 
     const formData = new FormData();
-    formData.append("query", query); // <-- must match Flask key: request.files['file']
+    formData.append("query", query);
     
     const dataURL = `http://127.0.0.1:5000/api/${query}`;
     

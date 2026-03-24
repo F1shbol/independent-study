@@ -1,0 +1,51 @@
+\chapter{Future Work}\label{future}
+
+This section will discuss the potential for further additions to the application, how they would improve it at fulfilling its purpose, and how these potential improvements tie into the concepts discussed in the main chapters of this paper.
+
+\section{Deployment}\label{deploy}
+
+The facet most obviously lacking from the completed software is that it is not deployed. It works in its development environment, but it is not hosted and has no web address -- users cannot access it over the internet. This is in equal parts due to complexity and cost: hosting a web application costs money, either from whatever hosting service one uses or through the equipment they maintain to self-host, and the software must be properly configured at a low level to properly integrate with whatever deployment service is being used.
+
+While free options for hosting do exist, they are meant to host small applications, and the ones I have so far explored do not offer sufficient resources to set up a software that has libraries as large and complex as Flask and D3 integrated into it. This leaves paid options which, while more likely to work, require a certain amount of prior research into whether a specific service would be appropriate or viable to deploy the application long-term. Research into this topic is certainly achievable, but was not prioritized in the development of the project to this point. Deployment would be the primary goal in any continued development of this project and its software so it can fulfill its intended purpose of being a functional and informative tool for music listeners.
+
+\section{Official API use}\label{useapi}
+
+Once the application is deployed to the point at which it has an accessible web address, I will be able to apply for access to Last.fm's official developer API. This access would allow the app to obtain a Last.fm user's listening history simply by providing a valid username. While certain limits exist on the extent and amount of requests you can make of the API, the simple gathering of recently-played tracks from one user at a time would not constitute a sizable enough load on the server to run afoul of those limits -- many Last.fm-based web apps are based around far more intensive API-calling processes than this.
+
+[With deployment (in any state) would come the ability to apply for API access, which would replace the need to rely on an external tool to generate a user's listening history for us]
+
+\section{Disguising the web scraper}\label{disguise}
+
+So far in the development of this project, Last.fm has exhibited a tolerance for the scraping the software performs -- there has been no indication that the devices or IP addresses used to make the requests have been subject to any sort of blockage or limitation in frequency. While it seems likely that this state of affairs will continue, it is certainly possible that the situation might change. If so, measures would need to be taken to disguise the identity of the software from the site, so it wouldn't be able to as-easily identify the source of the requests.
+
+Normally when a web browser accesses a site, information is sent to the web server about the nature of the user's connection. This includes the IP address of the connecting device, determined by the location of the internet router it uses, along with information about the browser like its version number. While consistently changing the given IP address would likely require some kind of virtual private network (VPN) and be beyond the scope of this project, changing the information about the connecting service to resemble that of a normal browser like Chrome of Firefox would be a simpler addition. This, combined with adding a slight random variation to the delay between scrapes, would serve to disguise the activity of the scraper as that of an unusually active user to the server.
+
+%[Be more specific about what measures can be taken]
+
+\section{Allowing JSON input}\label{jsonin}
+
+The Last.fm Data Export tool gives the option of exporting a user's data in three possible formats: CSV, XML, and JSON. While each of these data formats have slightly different use cases in general, all three serve the same basic purpose of storing structured data, and are exported from the tool all containing the same information, just organized differently. CSV data was chosen as the initial format for this software to accept due to its compatibility with spreadsheet programs like Excel, which dramatically increase its human-readability compared to the others, easing the early testing process. Unfortunately, the CSV files output by the tool are first converted to an unknown character encoding standard, which garbles and corrupts the text of artists with certain foreign characters in their names.
+
+The other formats evidently do not go through this same encoding process and leave foreign artist names intact -- thus, it would be a simple fix to the problem to add functionality to receive and process the differently-structured XML or JSON files as input. Because there is no drawback to any of the three options from the tool, CSV-reading functionality need not be kept, and only one of JSON or XML needs to be potentially readable and accepted by the software.
+
+\section{Facilitating manual history input}\label{manualmode}
+
+Many avid music listeners do not use Last.fm, and since the only function of accessing a Last.fm user's data is to obtain the counts of how many listens each of their artists had over the past week, the possibility can be raised of a user using an outside method of gathering a listening history to give to this software to access Last.fm's artist popularity data. The simplest way for the software to accept such a history would be for it to allow the user to enter it manually.
+
+Much of this functionality would be implemented on the React frontend. a flexible two-column form could be rendered for the user to enter artists and playcounts into, with a button to add additional rows as needed rather than giving them a predetermined amount. Once the user submits the form, it would be converted to JSON form by the frontend before being sent to the scraper to be decoded. Submitted artist values would then be turned into links and playcounts would be used to weight their listenership figures as normal.
+
+\subsection{User-adjustable playcount threshold}\label{fastmode}
+
+Similarly, a fronted-based form could also serve to allow the user to set their own minimum plays threshold for an artist to be included in the scraping process. A basic implementation of this idea would be a simple field for a user to specify this threshold directly as they upload the file. The downside to this would be that the user may not be familiar with the distribution of listenerships among the artists in their history and would uninformed as to what a desirable threshold would be. This could be done by first showing the user the distribution after they upload their file but before the scraping begins so they could pick a threshold. This method would be helpful, but involve another round of back-and-forth between the client and server to be implemented.
+
+\section{Expanding available timeframes or formats}\label{months}
+
+As it stands, the scope of the software's function is to gather information about the popularity of artists within a timeframe of one week. Theoretically, it is possible to expand this scope to cover individual albums and songs, as Last.fm generates pages for each that also contain the necessary six-month history graph; and cover time periods of up to six months, the potential time span allowed by the graph. However, as the potentially increased cost of providing this functionality would seem to outweigh the potential benefits, it is not planned to be implemented.
+
+Albums and especially songs are usually far more plentiful in users' listening histories than artists, as you naturally must have at least one of each per artist, and likely many more. The issue is that each of these items has its own page that would need to be scraped just like an artist would, and would thus need to scrape a number of pages many times higher than what would be needed for an artist-based history. While the increased potential load could be managed if tight restrictions were put in place on, say, the maximum number of scrapes allowed by a single user query, it would be simplest to not add the functionality at all and stick to the original scope of the project. This seems reasonable, given that existing Last.fm tools calculating how mainstream a user's taste is also focus only on artists, despite the availability of an overall listenership figure for albums and songs.
+
+\section{More reliable database model}\label{tinybad}
+
+The software currently uses TinyDB, a database system consisting of a Python library that operates on a simple JSON file containing key-value documents that cache scraped data on artists' listenership until the end of the day. While the simplicity of this system covers all the functionality required of it by the software, its reliance on a single file is not ideal for a centralized system where multiple requests could potentially be made of it at once.
+
+A better way to handle the caching of data would be to implement a database system that uses a client-server model -- that way additions or queries by the server would not immediately be carried out on the database, but would instead be queued and handled by the data store as it is able. This could be done either with a relational system like MySQL or a NoSQL system like MongoDB. A NoSQL system would dispense of unnecessary aspect of a relational system not needed for a simple key-value store, but since the number of daily insertions figures to be measured in hundreds, the potential performance benefits would be slight at best.

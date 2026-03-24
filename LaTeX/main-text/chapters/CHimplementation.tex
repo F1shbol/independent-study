@@ -26,105 +26,135 @@ Because the text of an artist's name is used as a unique identifier, the obvious
 	\end{center}
 \end{figure}
 
-This presents a problem for our data collection because the Chilean group, while by no means a hugely popular artist today, still commands a greater listenership on the whole than the American group, despite the latter group's one successful song. This means that using Last.fm data to determine the popularity of the American Supernova is inherently inaccurate, as the data would be presenting the combined listenerships of both, and would say they are far more popular than they actually are.
+This presents a problem for our data collection because the Chilean group, while by no means a hugely popular artist today, still commands a greater listenership on the whole than the American group, despite the latter group's one successful song. This means that using Last.fm data to determine the popularity of the American Supernova is inherently inaccurate, as the data would be presenting the combined listenerships of both, and would indicate that they are far more popular than they actually are.
 
-\subsection{Misspelled inputs}
+\subsection{Misspelled inputs and faulty error correction}
 
-Another potential issue with the data Last.fm retains of a user's listening history is that since the inputs come directly from software the user uses, it naturally can contain clerical errors like misspellings. This brings us to the first form of quality-control Last.fm performs on its database: artist redirects. Many artists in Last.fm's database have automatic redirects set up to catch common misspellings and misinputs -- for example, "Brian Transeau" will redirect to his proper stage name "BT", and "The Beetles" will redirect to "The Beatles".
+Another potential issue with the data Last.fm retains of a user's listening history is that since the inputs come directly from software the user uses, it naturally can contain clerical errors like misspellings. This brings us to the first form of quality-control Last.fm performs on its database: artist redirects. Many artists in Last.fm's database have automatic redirects set up to catch common misspellings and misinputs -- for example, 'Brian Transeau' will redirect to his proper stage name 'BT', and 'The Beetles' will redirect to 'The Beatles'. However, this raises a similar problem to the overlapping artists mentioned above: if an artist is actually named "The Beetles" (and multiple do exist), they will be redirected improperly. While this sort of mis-filing rarely happens for high-profile artists, it has been known to happen; in recent years, Last.fm users that are fans of the rapper Lucki have been dismayed to find a redirect in place toward a long-irrelevant Swedish pop duo called Lucky Twice for reasons unclear. In recent years, the site's developers have lost control of redirect functionality entirely, leaving them unable to create new ones or remove those that currently exist.
 
-\subsection{Cleaning the data}
+Redirects aren't quite the same as an artist being filed explicitly under the corrected name. By default, users' submissions of tracks to Last.fm to be recorded are subject to these redirects -- if a user scrobbles a song with 'Brian Transeau' listed as the artist, it will automatically be corrected when entered into their history. Users do have the option of disabling this automatic correction for their personal histories, but the greater impact redirects have is on the artist pages themselves.
+
+Redirected artists do have their own pages on the site, but they work slightly differently. If you try to directly navigate to their url as you would a normal artist -- by, say, going to https://www.last.fm/music/The+Beetles -- you will be rerouted to The Beatles' page. To get around this, you can add "+noredirect" to the url (i.e. https://www.last.fm/music/+noredirect/The+Beetles) to end up at the redirected artist's own page. On it, the page works like normal, having a list of top tracks, a bio, and the six-month listening history chart we take data from. For our purposes, getting to these sites is no trouble: adding "+noredirect" has no effect on links without a redirect, so we can simply add it to the url of every link to be scraped and be able to access their listening data as normal. Unfortunately, while savvy users of the site are likely to have turned off the automatic corrections feature, many others do not, leading to artificially inflated listening figures for the redirectee at the expense of the redirected.
+
+\subsection{Obtaining and cleaning the data}
+
+Last.fm-based web apps that process a specific user's data primarily get access to this data via Last.fm's web API. This service, however, is not universally available. To get access, one must send an application with information on the application you plan to use the API data for, as well as where the site is hosted. Hence, while the site remains in-progress and a decision on a hosting service is yet to be made, API access remains out-of-reach. Potential future use of the official API will be discussed in \autoref{future}.
+
+Instead of direct API data, we can make use of another Last.fm-based web app that does have API access -- specifically, a tool that directly exports listening data. While most tools display or represent a user's data in some way, a few exist that simply export it into a CSV or other specified file type, as the official site has no such functionality. However, some of these tools are geared toward user's exporting their entire history for archival purposes, while we only need data from the past week. After some exploration, the only tool that offers a suitably convenient option to specify a start date for the exported data is one called \href{https://mainstream.ghan.nl/export.html}{Last.fm data export}. Because the site is freely accessible, we can base our expectations of user input on what the site outputs as a stopgap method of obtaining a user's listening history until this project can gain access to the official API.
+
+Within the CSV files the tool outputs, each row is a track, with columns for holding the name, artist, album, and other auxiliary information. To obtain the counts for each artist, we simply need to iterate through the rows, keeping track of how many times each artist has been played. Unfortunately, a key weakness of these export-type tools is that the variety of alphanumeric character used in Last.fm artist names eclipses that of the CSV standard. Because of this, artists with foreign characters in their names (e.g. accents, umlauts, Asian-language symbols) can appear incorrect in the output CSV. Because the CSV files output by the export tool follow a different standard of character encoding, characters outside that standard will be randomized when decoded, creating a garbled text known as mojibake. Currently, the application is configured to accept these CSV files. If an artist's name is distorted by an encoding error, it will be detected and receive a value of -1, but remain in the dataset. A potential future solution will be discussed in \autoref{future}.
 
 \section{Building a web app with Flask and React}
 
-Construction of the web application was carried out with two popular web development software frameworks to respectively handle the frontend and backend operations: Flask, a Python-based framework that creates the API and database structure through which the site's content is disseminated and stored; and React, a JavaScript framework for designing user interfaces.
+Construction of the web application was carried out with two popular web development software frameworks to respectively handle the backend and frontend operations: Flask, a Python-based framework that creates the API and manages the database structure through which the site's content is disseminated and stored; and React, a JavaScript framework for designing user interfaces and managing client-side functionality.
 
 \subsection{Creating a frontend with React}
 
+The React frontend is responsible for displaying the application to the end user. It renders the base page, provides the user with graphical elements that accept data to send to the backend, and creates the final visualization with the information it receives back from the backend once the processing has completed.
+
 \subsubsection{JavaScript XML elements and structure}
+
+As discussed previously in \autoref{hooks}, React applications are primarily constructed with what it calls "functional components" -- JavaScript-style functions that accept HTML-style elements as arguments (known as props), and return a single block of HTML code. The restrictive nature of their inputs and outputs are intended to make such components insular and reusable, easing the process as much as possible to slot an existing component onto an application. React uses an extension to the JavaScript language called JavaScript XML (JSX) which primarily allows it to directly use HTML syntax in its return statements \cite{adedeji_full-stack_2023}. This allows for greater flexibility than the traditional webpage structure, in which JavaScript is executed within an existing HTML structure. React's method allows the structure of the webpage to be dictated by the client-side code, rather than confine it.
+
+The React code for this software is divided among multiple functional components: 
+
+\begin{itemize}
+	\item A top-level component, which establishes the base structure of the page.
+	\item An uploader component, which comprises a place for the user to upload their input file, a container to show the backend's response, and another container to display the completed chart once its data is returned to the frontend.
+	\item Multiple components to handle each phase of assembling and displaying the chart. The structure and function of each will be expounded further below.
+\end{itemize}
+
+Each component has JavaScript code to be executed, and returns HTML elements that are to be graphically rendered. The HTML returns are also able to call and pass props to the other components; the top-level component calls the uploader, which calls the first charting component, which in turn calls the next charting-related component under it.
 
 \subsubsection{Managing the state}
 
+As mentioned before, React Hooks are how functional components, being largely insular and self-reliant, access the state of the application. In the application, hooks are primarily used in the uploader component, where they are declared to store and manage the communications sent to and received from the backend. State variables are not interchangeable with normally declared JavaScript variables, as any new value they are set to only becomes directly usable after some part of the application updates and re-renders. Thus, state variables are only accessed via hooks when concrete actions are taken with functions, such as a user uploading a file to trigger the function handling the upload, which uses a hook variable to store the name and content of the file. Each component establishes their own hooks, which are limited to the scope of the component, similar to JavaScript variables being limited to the scope of the block they are declared in.
+
 \subsubsection{Integrating visualizations with D3}
+
+A series of nested components is responsible for creating the visualization with the data received from the backend. Once received in the uploader component, the data is passed as props to a component defining the size and stylings of the chart container, before being passed down farther to a component to create the actual scatterplot along with data about margins and spacing obtained from the container component. The data is then accessed in order to determine the numerical scope of the axes and the attributes of each data point to be added to the plot. The former information is passed twice to components responsible for creating the axes -- once for the x-axis, and again for the y -- while the latter is passed to a component responsible for creating the circular point that will appear on the plot once for each data point in the dataset. Further details on the visualization process will be discussed later in the chapter.
 
 \subsection{Creating an API backend with Flask}
 
+Flask is responsible for receiving the data sent to it by the frontend and processing it using the application's business logic. It is responsible for extracting from the input files the data on the artist pages to be scraped and the weights to apply to each artist once that data is collected, as well as performing the data analysis to supply the user with insights about their supplied history. Flask also manages the connection to the data store, where scraped data is cached to speed up future processes.
+
 \subsubsection{Handling user uploads and output data}
 
-Once a user designates the CSV containing their listening history to be uploaded, it is sent to the Flask backend via a POST request over the HTTP protocol. The request is sent to a specific route in the backend (similar to how a browser would access a specific page's URL), which contains the function to handle the uploading of the file
+Once a user designates the file containing their listening history to be uploaded, it is sent to the Flask backend via a POST request over the HTTP protocol. The request is sent to a specific route in the backend (similar to how a browser would access a specific page's URL), which contains the function to handle the incoming file. After checks are made that the file exists in the proper state and format, it is passed to the scraper function, the details of which are expounded in the next section.
 
-\subsubsection{Connecting to the scraper (will lead into next section)}
+Upon the completion of the scraping process, the function returns two things: a textual message for the user describing a few key takeaways from their data, and a JSON file containing the one week listening average and playcount for each artist to be displayed in the final visualization.
 
 \section{Processing data with python}
 
-This section will discuss how the above utilities are implemented in the working program.
+Once the backend receives the user's listening history, it then has to process the received information into a list of webpages to scrape for data, find the relevant data within each webpage, and perform the necessary calculations to determine each artist's one week listening average from the scraped data.
 
-\subsection{Input: reading .txt and .csv files}
+\subsection{Input: reading CSV files}
 
-Upon running the software, the user will be given two choices as to how they can input their desired listening data. First, they can enter it manually, in-browser. Second, they can download a .csv file from \href{https://mainstream.ghan.nl/export.html}{a web tool} that exports a Last.fm account's listening data. This subsection describes how each input is handled by the program.
+Currently the application is configured to be able to process CSV files from the Last.fm Data Export site -- potential future expansion of allowed file types and sources will be discussed in \autoref{future}. Upon receiving such a file, it is opened and iterated through. Each row represents a track played by the user and contains information about the track's artist and source album, among other things. The software is solely concerned with the artists, however. The first row's artist name is added to a key-value dictionary with the name as a key and a value of 1, representing the count of how many times it has so far appeared. For each subsequent row, the artist value is checked against the dictionary -- if the artist is already present, its count is increased; if not, it is added with a count of 1. Once the input file has been completely read through, the dictionary contains the user's play count for each artist in their history.
 
-\subsubsection{Input via .txt}
+\subsubsection{Playcount threshold}
 
-[[My plan is to let users type in their history manually if they don't have an accessible history]]
+Because scraping a site takes so much more time than other Python processes, the number of artists appearing in one's listening history will have a significant effect on the runtime of the program. Regardless of the total amount of tracks they listen to in a given period of time, some users listen to many different artists, while others only listen to a select few. Additionally, the popularity of mixed-artist playlists on streaming services has made it so, over the course of a week, a large portion of the artists a user listens to are played only a small amount of times -- often just once. Since artists played so infrequently naturally will have a very small individual impact on the overall data for an individual user, it makes sense to be able to have a threshold to be able to exclude such entries if the user wants to save time in the scraping process, as how many times each artist was played has no effect on how long scraping that artist's page will take
 
-\subsubsection{Input via .csv}
-
-For the .csv option, the user is given instructions to go to an external site to generate a .csv of their listening history. This site uses Last.fm's API to gather every song entry from the current date and time back to a time specified by the user. Since the six-month listener graph is shown on a three day delay, we need to select a date ten days in the past to get a week's worth of data from it. As such, the software generates the timestamp of ten days in the past for the user to enter into the website.
-
-[[The user will then upload this file to the site]] The program then iterates through every entry and keeps track of how many times each artist appears in a separate dictionary. It then appends each artist in the dictionary to aligned lists so the output of either input method is the same.
-
-\subsubsection{Fast mode}
-
-Because scraping a site takes so much more time than other Python processes, the number of artists appearing in one's listening history will have a significant effect on the runtime of the program. To make the program more convenient for users who listen to many artists just once, the program gives them an option to exclude artists with only 1 recorded entry. If selected, the program skips any artist with only one entry when appending the artists and playcounts to their respective lists.
+Currently the program hard-codes a threshold of four plays for an artist to be included in the scraping process. Artists with fewer than four plays will be filtered out between the previous dictionary-making step and the succeeding link-assembly step. Plans for implementing interactive functionality will be discussed in \autoref{future}.
 
 \subsection{Generating a list of target sites}
 
-Since Last.fm profile pages take the form https://www.last.fm/music/[artist name], many artists' names can simply be concatenated to the preceding part of the link. However, if the artist's name contains spaces or other select punctuation, those characters need to be replaced in order to be a valid url. Spaces are replaced by pluses, and other characters like question marks are replaced with unicode designations like "\%3F". For example, the name "Chance the Rapper" produces the link "https://www.last.fm/music/Chance+the+Rapper", and the name "+44" produces the link "https://www.last.fm/music/\%252B44". It then stores the links in another list aligned with the artist name and playcount.
+Since Last.fm profile pages take the form https://www.last.fm/music/[artist name], many artists' names can simply be concatenated to the preceding part of the link. However, if the artist's name contains spaces or other select punctuation, those characters need to be replaced in order to form a valid url. Spaces are replaced by pluses, and other characters are replaced with unicode designations like "\%3F" for the question mark character (?) based on the ASCII character encoding standard. For example, the name "Chance the Rapper" produces the link "https://www.last.fm/music/Chance+the+Rapper", and the name "+44" produces the link "https://www.last.fm/music/\%252B44", using the designation "\%252B" for the plus character (+). Currently, the commonly used special characters "/", "?", and "+" are automatically converted. 
+
+Links for each artist are created in this manner and stored alongside their corresponding artist name and playcount.
 
 \subsection{Scraping: BeautifulSoup and Requests}
 
-When a list of valid links has been obtained, the software iterates through it, using Requests to get the source code for each profile page and using BeautifulSoup to turn the response into an object containing all the site's code in text form.
+When a list of valid links has been obtained, the software iterates through it, first using the Python library Requests to visit the link and obtain the source code for each profile page and then using the BeautifulSoup library to turn the response into an object containing all the site's code in text form.
 
-Once each page's code has been obtained, the program uses BeautifulSoup's functions to search for tables within it. As the site is structured now, the second table on the page contains the six-month listening history. Web scraping projects like this often run the risk of breaking if anything on the site changes, and this one is no exception. If the table we're using changes or disappears, there isn't a way to fix it without going back in and re-coding the program. Thankfully, the site's layout has remained the same for just under six years as of this writing, so the likelihood of constant fixes being required is low.
+Once each page's code has been obtained, the program uses BeautifulSoup's functions to search for tables within it. As the site is structured now, the second table on the page contains the six-month listening history chart. Web scraping projects like this often run the risk of breaking if anything on the site changes, and this one is no exception. If the table we're using changes or disappears, there isn't a way to fix it without going back in and re-coding the program. Thankfully, the site's layout has, as of March 2026, remained the same since July of 2019, so the likelihood of constant fixes being required is low.
 
-Once the table is acquired, each row is searched for its "js-date" and "js-value" keys, which are themselves searched for "datetime" and "data-value" values, respectively. Each row is parsed in this way, and the results are transformed from lists to a Pandas dataframe, which the next section will detail.
+Once the table is acquired, each row is searched for its "js-date" and "js-value" keys, which are themselves searched for "datetime" and "data-value" values, respectively. Each row is parsed in this way, and the results are transformed from lists to a Pandas dataframe, which \autoref{pandas} will detail.
 
 %The site's structure has not changed since July of 2019
 %https://web.archive.org/web/20190710110401/last.fm/music/Prince
 
-\subsubsection{Best practices}
+\subsubsection{Scraping best practices}
 
 One of the main roadblocks to web scraping is that many websites do not want to be scraped and will implement design choices to block or hinder potential scrapers. As discussed previously, Last.fm does not disallow the automated access of its artist pages, so it can be assumed that they are not hostile to scrapers in general. Still, it's important to not abuse this potential privilege and remain in the good graces of the administrators.
 
-Existing literature recommends setting a minimum delay between requests and testing the limits of your access through trial and error \cite{mitchell_web_2015}. A delay of 3 seconds was used during the testing of the software, and no restrictions were detected. This renders any potential methods of disguising the identity of the scraper unnecessary for the time being, though they will be described further in Future Work.
+Existing literature recommends setting a minimum delay between requests and testing the limits of your access through trial and error \cite{mitchell_web_2015}. A delay of 3 seconds was used during the testing of the software, and no restrictions were detected. This renders any potential methods of disguising the identity of the scraper unnecessary for the time being, though potential for adding such functionality in the future will be discussed in \autoref{future}.
 
-\subsection{Processing: Pandas}
+\subsection{Processing: Pandas}\label{pandas}
 %NumPy isn't actually used at the moment
 
-The table extracted by BeautifulSoup is then transformed into a Dataframe by the Pandas module, which takes from each artist the listener counts from every date and calculates the average over four timeframes: one week, one month (30 days), three months (90 days), and six months (180 days; the maximum stored by the table). These averages are appended to the Dataframe, attached to each artist and their playcount. Currently, the software only makes use of the one week timeframe, as it is takes the shortest time to run. The implementation of the other timeframes will be discussed in Future Work.
+The table extracted by BeautifulSoup is then transformed into a Dataframe by Python's Pandas module, which takes from each artist the listener counts from every date and calculates the average over four timeframes: one week, one month (30 days), three months (90 days), and six months (180 days; the maximum stored by the table). These averages are appended to the Dataframe, attached to each artist and their playcount. Currently the software only makes use of the one week timeframe, with no plans to make use of any of the others.
 
-To weight the listener averages, first a new column is created in the Dataframe multiplying each artist's playcount by their average listeners over the one week timeframe. The sum of all values in this new "weighted" column is then divided by the sum of all values in the playcount column, yielding a final value of the user's listener average over the timeframe. The significance of this value is: for each song the user listened to in the last week/month/etc., how popular on average was the artist, in terms of average daily listeners over the same time period.
+To weight the listener averages, first a new column is created in the Dataframe multiplying each artist's playcount by their average listeners over the one week timeframe. The sum of all values in this new "weighted" column is then divided by the sum of all values in the playcount column, yielding a final value of the user's listener average over the timeframe. The significance of this value is: for each song the user listened to in the last week/month/etc., how popular on average was the artist in terms of average daily listeners over the same time period?
 
 For most users, this number ranges from 5,000 to 40,000. However on its own the number means very little. After displaying it, the program then performs some additional operations to provide the user with context for their score.
 
 \subsubsection{Further data analysis}
 
-In addition to the basic processing, more context is provided about the artists within the user's dataset. Specifically, which artists were most and least mainstream, and which ones affected the final result the most. Determining the most and least mainstream artists can be solved with a single command each to the Dataframe. Determining the most influential artists requires that, for every artist, the listening average to be recalculated with that artist excluded. Subtracting the overall listener average from this number yields a positive or negative number signifying how much the overall average would have changed if that artist had not been included. For example, if a user listened to Kendrick Lamar -- the most popular artist at the time of writing -- once and Green Day -- a popular artist, but much less so -- 30-40 times, Kendrick Lamar would be shown as the most mainstream artist, but Green Day would have a further negative value here, meaning if the user had not listened to any Green Day, the number would have been lower than if they had instead not listened to any Kendrick Lamar.
+In addition to the basic processing, more context is provided about the artists within the user's dataset. Specifically, which artists were most and least mainstream, and which ones affected the final result the most. Determining the most and least mainstream artists can be solved with a single command each to the Dataframe. Determining the most influential artists requires that, for every artist, the listening average to be recalculated with that artist excluded. Subtracting the overall listener average from this number yields a positive or negative number signifying how much the overall average would have changed if that artist had not been included. For example, if a user listened to Kendrick Lamar -- the most popular artist at the time of writing -- once and Green Day -- a popular artist, but much less so -- 30-40 times, Kendrick Lamar would be shown as the most mainstream artist, but Green Day would have a negative value here, meaning if the user had not listened to any Green Day, the number would have been lower than if they had instead not listened to any Kendrick Lamar. This information is passed, in text form, to the frontend to be displayed with the final chart.
+
+\section{Caching data with TinyDB}
+
+During the scraping process, the data store comes into play, being used as a cache for the one-week listening average calculated for each artist. It is implemented centrally using a document database called TinyDB. When the scraper function iterates through the list of queued links, it first checks to see if the artist and their one-week listening average are already recorded in the database. If so, it retrieves that value and skips scraping that artist's page having already gotten the information it would end up calculating with the scraped data. If the artist is not present in the database, once their one-week listener average is calculated, the artist is inserted as a key with the average as its value. Because the day-by-day chart data is updated daily, the Flask application will clear the database if the data within it is from a previous day. In sum, the component is a centralized document database acting as a daily cache of scraped artist data to save the time and processing power of a scrape if the artist appears in another user's history in the same day.
+
+TinyDB, as the name implies, is designed to be lightweight and take up little storage space within an application. It is a library that establishes a one-file database model based on the Python JSON standard, and its data by default is stored in a .json file. As discussed in \autoref{onefile}, one-file databases are not ideal for use as centralized databases, as they cannot properly handle simultaneous requests, which can lead to corrupted data. In this implementation, the risk of such a collision is low, as the relatively lightweight data being stored does not take long to query. In addition, the potential harm caused by corruption is low, as the database is refreshed daily anyway and only serves as a convenience, rather than an essential function. Still, other potential options without these risks exist, and will be discussed in \autoref{future}.
 
 \section{Visualizing the data with D3 and JavaScript}
 
-\subsection{Retrieving the processed data}
+This section will describe the implemented process of creating a visualization of the listenership of the artists in a user's listening history using client-side tools. Vanilla JavaScript and the D3.js module are both used to generate SVG graphics using the data given to the frontend components by the Flask backend.
 
-[[Describe the process by which the data is sent from the Python files to the React frontend]]
+In this stage, the data will need to be made available in JSON form and accessible via a url, as it will be operated on by D3, a web-based visualization framework. To do this, once the processing is complete and the data is all stored within the Pandas dataframe, it is converted to JSON and saved in a file to the server's local storage (as these JSON files rarely eclipse even a kilobyte of storage space, no mechanism to clear or remove old files is currently necessary). A Flask route exists to retrieve the contents of a JSON file by its filename, so that name is returned by the function once the file has been generated and saved.
 
 \subsection{Creating a scatterplot}
 
-[[Describe the structure and function of the basic scatterplot code (i.e. circles and axes)]]
+First, within the uploader component in the frontend, the filename returned from the backend is used to make a request to the url where the JSON data can be accessed. Once that data is received, it is assigned to the hook created for it and passed to the initial chart component as props.
 
-[[Refresher on the linear vs. log scale question]]
+This first component sets up the HTML element the chart container will exist inside. From there, the data is passed to another component responsible for taking those specifications and calling the final set of components below it to build each of the chart's elements in SVG. In this second component, the scales of the axes are generated by finding the minimum and maximum values in both the artists' one-week listener averages and their playcounts. After testing with several sample datasets, it was determined that the Y-axis would be best suited to using a logarithmic scale, as the distribution of artists' listener averages tend to clump up toward the bottom when displayed alongside at least one extremely well-known artist. \autoref{linex} shows a graph of a sample dataset using a linear scale, while \autoref{logex} shows the same data on a logarithmic scale.
 
 \begin{figure}[!ht]
 	\begin{center}
-		\woopic{linex}{.5}
+		\woopic{linex}{.6}
 		%\vspace{-.2 in}
 		\caption{An example of several artists graphed on a linear scale}\label{linex}
 	\end{center}
@@ -132,14 +162,20 @@ In addition to the basic processing, more context is provided about the artists 
 
 \begin{figure}[!ht]
 	\begin{center}
-		\woopic{logex}{.5}
+		\woopic{logex}{.6}
 		%\vspace{-.2 in}
 		\caption{An example of several artists graphed on a logarithmic scale}\label{logex}
 	\end{center}
 \end{figure}
 
-\subsection{Augmenting the chart}
+While it is more difficult on the logarithmically scaled version to estimate the exact y-value of the data points, it is far more clear for the obscure artists which of them are more often played without totally sacrificing this clarity for the artists with higher listener averages. D3 functions are used to calculate these scales.
 
-[[Depending on what I get to, describe the interactivity of the graph. Tooltips, etc]]
+The component then, in returning its HTML elements, calls several other components with the data it has calculated or been given:
 
-\section{Design decisions}
+\begin{itemize}
+	\item The ChartContainer component takes in the size and margin information to create the SVG container the other elements will exist within
+	\item The Axis component takes the scales calculated by the D3 functions and which side -- left or bottom -- it will be measuring. It creates tick marks to make each axis readable and applies a text label to each.
+	\item Finally, each data point is mapped onto an instance of the Circle component, each specifying their x- and y-values, along with color and size, which currently all remain uniform. These values are aligned with the axes by using the same x and y scale variables as the axes were given.
+\end{itemize}
+
+The result is a scatterplot as exemplified by the previously shown figures, displayed to the user along with the textual information generated by the backend informing the user of their overall one-week listener average, as well as their most impactful artists in bringing that average higher or lower (i.e. which artists would, if removed from the data entirely, cause the average to move furthest in one direction or the other). Functionality to provide specific information about each data point such as their exact x and y coordinates is not currently implemented, and the potential for it will be discussed in the following chapter.
