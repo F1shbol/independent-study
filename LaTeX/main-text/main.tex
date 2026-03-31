@@ -96,15 +96,15 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{Title to be Determined}
+\title{Designing a Web Application to Scrape Data From the Last.fm Platform}
 \thesistype{Independent Study Thesis} % you should make this Independent Study Thesis
 \author{Andrew Fischer}
 %\presentdegrees{Ph.D.} % you should comment this line
-\degreetoobtain{BA in computer stuff}
+\degreetoobtain{Bachelor of Arts in Computer Science}
 \presentschool{The College of Wooster}
-\academicprogram{MCS}
+\academicprogram{Department of Mathematical \& Computational Sciences}
 \gradyear{2026}
-\advisor{D Guarnera}
+\advisor{Drew Guarnera}
 %\secondadvisor{Second Advisor}
 %\reader{Nord}
 \copyrighted   
@@ -144,7 +144,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{abstract}
-Include a short summary of your thesis, including any pertinent results.  This section is \emph{not} optional, and the reader should be able to learn the meat of your thesis by reading this (short) section.
+
+Last.fm is a website that tracks its users' music listening data, and is known for making that data available for developers to create informative web applications with it. This project seeks to create the Last.fm Popularity Calculator, an application joining this ecosystem, with a slight twist: obtaining certain data via web scraping that is unavailable through the site's official channels. The software seeks to accept a user's recent listening history and provide them with a breakdown of how popular the artists they listen to are.
+
+This paper maps out and discusses the key conceptual subjects that go into the creation of the application: application programming interfaces (APIs), which connect discrete systems or internal components; web scraping and how to navigate its inherent legal and ethical challenges; software design and the architecture of different components in a single system; database systems and what type of system would be most useful to this project; and how to design and render informative data visualizations. The implementation of the software is then described. The frontend is able to accept an input file from the user and send it to the backend to handle the web scraping and processing of the collected data. Certain data is cached in a database, and the results are returned to the frontend to be rendered by the user's browser into a scatterplot. 
+
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,8 +166,14 @@ Include a short summary of your thesis, including any pertinent results.  This s
 %                                                                                       
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% No acknowledgements for now. If I change my mind, it'd be the Guarneras, Will Sieber, and Tamir
+
 \begin{acknowl}  
-I would like to acknowledge Prof. Lowell Boone in the Physics Department for his suggestions and code.
+	
+First, I would like to thank my advisor Drew Guarnera and Junior IS professor Heather Guarnera, for helping me channel my obsession with this silly website into both substantive research and functioning software. Being able to envision, research, and build things based on whatever interests me was part of what drew me to computer science, and I'm excited to continue doing it after graduation.
+
+Thanks also go to Will Sieber, whose suggestion last year to handle my \LaTeX{} locally made all of the formatting a breeze, and to Tamir Hussein, who got me into music tracking in the first place.
+
 \end{acknowl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,7 +182,7 @@ I would like to acknowledge Prof. Lowell Boone in the Physics Department for his
 %                                                                                       
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{vita} 
+%\begin{vita} 
 % You talk about yourself and how you got to where you are now. There is a structured form for the Vita that can be used if you want, but I don't encourage it.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -201,20 +211,20 @@ I would like to acknowledge Prof. Lowell Boone in the Physics Department for his
 %
 %%%This is for any publications you might have.%%%%%
 
-\begin{publist}  
-\pubitem{\quad}
-\pubitem{\quad}
-\end{publist} 
-
-\begin{fieldsstudy} 
-    \majorfield{Major}
-	\minorfield{Minor}
-    \specialization{Area of IS research}
-    %\begin{studieslist}
-   %\studyitem{Abstract Algebra}{Hampton}
-   %\end{studieslist}
-  \end{fieldsstudy}
-\end{vita}
+%\begin{publist}  
+%\pubitem{\quad}
+%\pubitem{\quad}
+%\end{publist} 
+%
+%\begin{fieldsstudy} 
+%    \majorfield{Computer Science, B.A.}
+%	\minorfield{Political Science Minor}
+%    \specialization{Web development [is this valid, or is there a list I should consult?]}
+%    %\begin{studieslist}
+%   %\studyitem{Abstract Algebra}{Hampton}
+%   %\end{studieslist}
+%  \end{fieldsstudy}
+%\end{vita}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -229,8 +239,8 @@ I would like to acknowledge Prof. Lowell Boone in the Physics Department for his
 
 \tableofcontents
 \listoffigures %Use if you have a list of figures.
-\listoftables%Use if you have a list of tables.
-\lstlistoflistings% Use if you are using the code option
+%\listoftables%Use if you have a list of tables.
+%\lstlistoflistings% Use if you are using the code option
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -282,6 +292,7 @@ I would like to acknowledge Prof. Lowell Boone in the Physics Department for his
 %\input{appendices/math}
 %\input{appendices/java}
 %\input{appendices/cpp}
+\input{chapters/APPai}
 %\input{appendices/options}
 %\input{appendices/afterword}
 
@@ -291,7 +302,7 @@ I would like to acknowledge Prof. Lowell Boone in the Physics Department for his
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\nocite{*} % This command forces all the bibliography references to be printed -- not just 
+%\nocite{*} % This command forces all the bibliography references to be printed -- not just 
               % those that were explicitly cited in the text.  If you comment this out, the bibliography
               % will only include cited references.
 \printbibliography[title=References,heading=bibintoc]% load our Bibliography file

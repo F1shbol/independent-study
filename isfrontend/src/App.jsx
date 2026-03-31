@@ -162,7 +162,7 @@ function FileUploader() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Upload a File</h2>
+      <h3>Upload a File</h3>
 
       <input type="file" onChange={handleFileChange} />
 

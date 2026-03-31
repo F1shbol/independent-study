@@ -1,0 +1,77 @@
+\chapter{AI addendum}
+
+The following appendix contains the required documentation of AI use in the writing and software of the project
+
+\section{Writing}
+
+Introductory paragraphs can be deceptively frustrating to write; I've spent a good amount of time learning about subjects and how to use certain tools, and now I have to describe those ideas succinctly in such a way where a) someone totally unfamiliar with the concept could understand it, and b) it is succinct and written in a formal, academic style. In my view, the difficulty of writing these increases as topics get higher-level -- at lower levels, topics can easily be explained in relation to each other by building and expanding on higher ones. At high enough levels, introductory explanations feel like they have to be conjured out of thin air with no supporting context. Describing topics with these constraints is not a strength of mine.
+
+Sometimes out of chance or necessity I can come up with a good introductory paragraph off the top of my head. When I can't, my general strategy (which I expect is fairly common) is to find a description in whatever source I'm using to learn about the subject (often an article or textbook) and use it as a guide. Essentially I use the example as an outline, addressing the same concepts in my own words and with my own organization if necessary. In the final paper, introductory paragraphs and sentences were created in this way for subjects like APIs, HTTP, and software architecture (as I recall). In situations where I couldn't find a readily available example to use, I used AI to generate one that I could use as a guide instead. The three such situations are described below, in chronological order from the date they took place: introducing the D3 library, the concept of data visualization, and the concept of relational databases. Conversations with the chatbot are notated in sans-serif, and my inputs are bolded. No other use of AI went into the writing of the paper.
+
+\subsection{D3}
+
+\begin{singlespace}\small
+		\textbf{\textsf{in a paragraph, introduce D3.js and its general purpose and functionality}}
+\end{singlespace}
+
+\begin{singlespace}\small
+		\textsf{D3.js (Data-Driven Documents) is a powerful open-source JavaScript library used for creating dynamic, interactive data visualizations directly in web browsers. Its general purpose is to help developers bind data to the Document Object Model (DOM) and then transform that data into visual forms—such as charts, graphs, maps, and dashboards—using web standards like HTML, SVG, and CSS rather than proprietary frameworks. D3 provides fine-grained control over every visual element, offering tools for data loading, scaling, layout calculation, animation, and transitions, which makes it highly flexible compared to prebuilt charting libraries. Instead of giving you fixed chart types, D3 supplies low-level building blocks, enabling you to craft custom, responsive, and interactive visualizations tailored to specific data and storytelling needs.}
+\end{singlespace}
+
+\begin{singlespace}\small
+
+	\textbf{\textsf{can you tone down the complimentary tone and make it more of an academic description?}}
+
+\end{singlespace}
+
+\begin{singlespace}\small
+		\textsf{D3.js (Data-Driven Documents) is an open-source JavaScript library for producing data visualizations in web browsers by directly manipulating web standards such as HTML, SVG, and CSS. Its primary purpose is to bind structured data to elements in the Document Object Model (DOM) and apply transformations that represent the data visually. The library provides functions for tasks such as data loading, scaling, layout computation, and animated transitions, allowing developers to construct charts, graphs, maps, and other interactive graphics. Rather than supplying predefined chart types, D3.js offers low-level primitives that support flexible, programmatic control over visual encodings and interactions, making it suitable for custom visualization development and research-oriented applications.}
+\end{singlespace}
+
+For reference, the final paragraph as it appears in \autoref{dataviz} is shown below (citations removed):
+
+\begin{singlespace}\small
+	D3.js (standing for Data-Driven Documents and often abbreviated to "D3") is an open-source JavaScript library for creating data visualizations within web browsers using previously discussed standards like HTML and SVG. It assigns structured data points to visual elements in the DOM tree and graphically manipulates them with different functions. Because the DOM is manipulable by the user's browser, visualizations can be user-interactive. Rather than having predefined charts, D3 operates at a low level, requiring each element be specified and designed by the code. While its comparative complexity to other popular data visualization software and technologies gives it a steep learning curve, its extensive flexibility appeals to statisticians, and its compatibility with web standards via JavaScript makes makes it useful to web developers.
+\end{singlespace}
+
+\subsection{Data visualization}
+
+\begin{singlespace}\small
+\textbf{\textsf{Can you provide a similarly academic introduction to the subject of data visualization in general, touching on the specifics of web development?}}
+\end{singlespace}
+
+\begin{singlespace}\small
+\textsf{Data visualization is the practice of representing data in graphical or visual forms to facilitate exploration, analysis, and communication of patterns, trends, and relationships. By mapping quantitative or categorical variables to visual properties such as position, color, size, and shape, visualization techniques enable more efficient interpretation than textual or tabular representations alone. Within the context of web development, data visualization is commonly implemented using browser-based technologies including HTML for structure, CSS for presentation, and JavaScript for interactivity and data processing. These standards support the creation of interactive and dynamic visualizations that can respond to user input, update in real time, and integrate with networked data sources. As a result, web-based visualization has become a widely adopted approach for dashboards, analytical tools, and public-facing information systems, balancing accessibility, portability, and technical flexibility. High-quality visualizations additionally require careful consideration of perceptual design principles, appropriate visual encodings, clear labeling, data integrity, and usability, ensuring that representations are accurate, interpretable, and aligned with the intended analytical or communicative goals.}
+\end{singlespace}
+
+For reference, the final paragraph as it appears in \autoref{dataviz} is shown below (citations removed):
+
+\begin{singlespace}\small
+Data visualization is the practice of representing data graphically to communicate relationships to the viewer. By assigning quantitative or categorical variables to visual elements like position and color, visualization techniques can be more informative and accessible than textual or table-based representations can. In the context of web development, data visualization is commonly implemented using browser-based technologies like HTML, CSS, and JavaScript. Creating quality visualizations requires considering design principles like clear labeling and readability, while also making sure a chart is accurate and fulfills its intended communicative goals.
+\end{singlespace}
+
+\subsection{Relational databases}
+
+\begin{singlespace}\small
+	\textbf{\textsf{in a couple paragraphs, explain the structure and function of relational databases}}
+\end{singlespace}
+
+\begin{singlespace}\small
+	\textsf{Relational databases are built on a structured, table-based model in which data is organized into rows and columns. Each table (often called a relation) represents a specific entity—such as customers, orders, or products—and each row represents a unique record of that entity. Columns define the attributes of the records, and every table includes a primary key: a uniquely identifying field that ensures each row can be referenced unambiguously. Relationships between tables are established through foreign keys, which are columns that link one table’s records to those in another. This structure allows data to be stored in a highly organized, normalized form that reduces redundancy and maintains consistency.}
+		
+	\textsf{Functionally, relational databases use Structured Query Language (SQL) to define, manipulate, and query data. SQL enables users to insert, update, delete, and retrieve data with precision, often combining multiple tables through joins based on their relationships. The relational model supports strong data integrity through constraints, transactions, and indexing, which provide reliable, predictable behavior even in large, multi-user environments. As a result, relational databases are widely used in applications where accuracy, consistency, and the ability to express complex queries are essential, such as finance, inventory management, and enterprise systems.}
+\end{singlespace}
+
+For reference, the final paragraph as it appears in \autoref{databases} is shown below (citations removed):
+
+\begin{singlespace}\small
+	The most common form of database is the relational database. Invented in and popularized since the late 1960s, these databases store information in "relations", which are commonly represented as tables representing a specific entity like customers or products in a retail setting. Within each table, each row represents a unique permutation of that entity (e.g. a different customer), and each column defines a particular attribute of the record (e.g. a customer's name, age, etc.).
+	
+	Every table includes a primary key: a field (or group of fields) in each table that makes each row uniquely identifiable within it. Relationships between tables are maintained with foreign keys, which associate one table’s records to those in another via the first table's primary key. Relational database systems use Structured Query Language (SQL) to operate on stored data. SQL is used to insert, update, delete, and retrieve information in a database. The relational model ensures data integrity, which makes it widely used in contexts where accuracy is essential. Important aspects of relational databases that serve to support data integrity and maintain transaction control are referred to under the acronym ACID
+\end{singlespace}
+
+\section{Software}
+
+AI tools were also sometimes used in the development of the software, primarily for troubleshooting issues and generating code. Most of the problems that needed assisted troubleshooting had to do with React and JavaScript. As I hadn't used JavaScript or React in a web context prior to this year, some of the underlying concepts and assumptions were unfamiliar to me and resulted in bugs with unhelpful or nonexistent error codes to diagnose the problem with, necessitating some outside help.
+
+Code was only generated in two contexts: creating and modifying visual React components (such as the file upload window) and adding functionality to the SVG chart with JavaScript code (such as adding text to the points). As the project went on, my understanding of React and JavaScript improved, and I needed less help with making connections between components.
