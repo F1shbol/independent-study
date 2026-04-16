@@ -85,7 +85,7 @@ def startScraper(file_path, UPLOAD_FOLDER, db):
     OWLA = frame['weighted'].sum() / frame['playcount'].sum()
 
     textOutput = "".join([textOutput,"Your one-week listener average is ", str(round(OWLA, 1)), 
-        "\nThis means that for each song you played, that many people listened to the artist every day last week"])
+        "\nThis means that for each song you played, that many people listened to the artist every day last week."])
 
     frame = frame.sort_values(by='x1w')
     frame = frame.reset_index() # This adds an extra index column to the left, affecting the iloc calls below
@@ -111,6 +111,9 @@ def startScraper(file_path, UPLOAD_FOLDER, db):
     current_timestamp = str(int_stamp)
     csv_name = current_timestamp + ".csv"
     json_name = current_timestamp + ".json"
+
+    textOutput = "".join([textOutput,"To see this chart again, save this number: ", current_timestamp, 
+        " and type it into the search bar below the upload field."])
 
     frame = frame.drop(['weighted', 'LstnrTotal', 'PlayTotal', 'LstnrAvg'], axis=1)
 

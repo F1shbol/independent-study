@@ -51,8 +51,8 @@ def printBookends(frame):
     # print("Your most obscure artist was ", frame.loc[0].iloc[1], " (", frame.loc[0].iloc[3], 
     #   " average listeners last week)\n", sep="")
     return ["\nYour most mainstream artist was ", str(frame.loc[len(frame)-1].iloc[1]), " (", str(frame.loc[len(frame)-1].iloc[3]), 
-      " average listeners last week)", "\nYour most obscure artist was ", str(frame.loc[0].iloc[1]), " (", str(frame.loc[0].iloc[3]), 
-      " average listeners last week)"]
+      " average listeners last week).", "\nYour most obscure artist was ", str(frame.loc[0].iloc[1]), " (", str(frame.loc[0].iloc[3]), 
+      " average listeners last week)."]
 
 def totalListenersColumn(frame):
     lst = []
@@ -95,4 +95,4 @@ def findHeaviest(df):
     # print("Your favorite obscure artist was ", df.loc[df['impact'].idxmin()].iloc[1], ", which you played ",
     #       df.loc[df['impact'].idxmin()].iloc[2], " times", sep="")
     return ["\nYour favorite mainstream artist was ", str(df.loc[df['impact'].idxmax()].iloc[1]), ", which you played ", str(df.loc[df['impact'].idxmax()].iloc[2]), " times", "\nYour favorite obscure artist was ", str(df.loc[df['impact'].idxmin()].iloc[1]), ", which you played ",
-          str(df.loc[df['impact'].idxmin()].iloc[2]), " times"]
+          str(df.loc[df['impact'].idxmin()].iloc[2]), " times."]

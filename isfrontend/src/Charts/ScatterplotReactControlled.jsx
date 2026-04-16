@@ -34,7 +34,7 @@ const ScatterplotReactControlled = props => {
 
   return (
     <Card>
-      <h2>Chart name</h2>
+      <h3 className='black-text'>Artist popularity vs. user playcount</h3>
       <ChartContainer
         width={width}
         height={height}
@@ -52,7 +52,7 @@ const ScatterplotReactControlled = props => {
           scale={yScale}
           innerWidth={innerWidth}
           innerHeight={innerHeight}
-          label={"Listeners (1w)"}
+          label={"Daily average listeners (1w)"}
         />
         {props.data.map(framework => (
           <g key={`point-${framework.name}`}>

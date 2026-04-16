@@ -10,8 +10,6 @@ import Charts from './Charts/Charts';
 function App() {
   const [count, setCount] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  
-
 
   // Time effect
   useEffect(() => {
@@ -20,47 +18,38 @@ function App() {
     });
   }, []);
 
-  // D3 effect
-  // useEffect(() => {
-  //   // const dataURL = "https://d3js-in-action-third-edition.github.io/hosted-data/apis/front_end_frameworks.json";
-  //   const dataURL = "http://127.0.0.1:5000/api/file1.json"
-    
-  //   let mounted = true;
-  //   d3.json(dataURL).then(data => {
-  //     console.log("data", data);
-
-  //     if (mounted) {
-  //       setData(data);
-  //       setLoading(false);
-  //     }
-  //   });
-
-  //   return () => mounted = false;
-  // }, []);
-
   return (
     <>
-      <div>
+      {/* <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
-      </div>
-      <h1>Vite + React</h1>
+      </div> */}
+      <h1>Last.fm Popularity Calculator</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        {/* <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
-        </button>
-        <p>The current time is {new Date(currentTime * 1000).toLocaleString()}.</p>
-        <p>
+        </button> */}
+        {/* <p className='black-text'>The current time is {new Date(currentTime * 1000).toLocaleString()}.</p> */}
+        {/* <p className='black-text'>The current time is {currentTime}.</p>
+        <p className='black-text'>A week ago is {currentTime - 864000}.</p>
+        <p className='black-text'>
           Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+        </p> */}
+        <p className='black-text'> Instructions:</p>
+        <ol className='black-text'>
+          <li>Visit <a href="https://mainstream.ghan.nl/export.html">this Last.fm export tool</a></li>
+          <li>Enter your username, and select "Scrobbles" and "CSV" from the two dropdowns</li>
+          <li>Enter "{currentTime - 864000}" into the "timestamp" field</li>
+          <li>Click "Go", then upload the exported file below</li>
+        </ol>
       </div>
-      <p className="read-the-docs">
+      {/* <p className="read-the-docs">
         Click on the Vite and React logos to learn more
-      </p>
+      </p> */}
       <FileUploader/>
 
 
@@ -145,7 +134,7 @@ function FileUploader() {
     const formData = new FormData();
     formData.append("query", query);
     
-    const dataURL = `http://127.0.0.1:5000/api/${query}`;
+    const dataURL = `http://127.0.0.1:5000/api/${query}.json`;
     
     console.log("requestURL (bypass)", dataURL);
     
@@ -161,31 +150,34 @@ function FileUploader() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h3>Upload a File</h3>
+    
+    <div style={{ padding: "4px" }}>
+      <div style={{ padding: "20px" }}>
+        <h3>Upload a File</h3>
 
-      <input type="file" onChange={handleFileChange} />
+        <input type="file" onChange={handleFileChange} />
 
-      <br /><br />
+        <br /><br />
 
-      <button onClick={handleUpload}>Upload</button>
+        <button onClick={handleUpload}>Upload</button>
 
-      <br /><br />
+        <br /><br />
 
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search..."
-      />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Past search code..."
+        />
 
-      <button onClick={handleBypass}>Go</button>
+        <button onClick={handleBypass}>Go</button>
 
-      <p>{message}</p>
+        <p>{message}</p>
 
-      <p>{content}</p>
+        <p>{content}</p>
+      </div> 
       <div className="container">
-        {loading && <div className="loading">Loading...</div>}
+        {loading && <div className="loading">Waiting for chart data...</div>}
         {!loading && <Charts data={data} />}
       </div>
     </div>

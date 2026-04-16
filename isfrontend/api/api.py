@@ -18,7 +18,7 @@ CORS(app)
 
 @app.route('/api/time')
 def get_current_time():
-    return {'time': time.time()}
+    return {'time': int(datetime.now().timestamp())}
 
 london_tz = ZoneInfo("Europe/London")
 today_london  = str(datetime.now(london_tz).date())

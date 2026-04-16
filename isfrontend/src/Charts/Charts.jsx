@@ -15,7 +15,7 @@ const Charts = props => {
 
   return (
     <Fragment>
-      <h1>Heading text</h1>
+      {/* <h1>Heading text</h1> */}
       <div className='row'>
         {/* <div className='col-9'>
           <Rankings margin={margin} />
@@ -36,7 +36,7 @@ const Charts = props => {
           </div>
         </div>
       </div>
-      <div className="source">Data source and original rankings chart: <a href="https://2021.stateofjs.com/en-US/libraries/front-end-frameworks">The State of JS 2021: Front-end Frameworks</a></div>
+      {/* <div className="source">Data source and original rankings chart: <a href="https://2021.stateofjs.com/en-US/libraries/front-end-frameworks">The State of JS 2021: Front-end Frameworks</a></div> */}
     </Fragment>
   )
 };
