@@ -16,15 +16,19 @@ app = Flask(__name__)
 # CORS(app, origins=["http://localhost:5173"])
 CORS(app)
 
+# Fetches current time and converts to UTS
 @app.route('/api/time')
 def get_current_time():
     return {'time': int(datetime.now().timestamp())}
 
+# I haven't tested this empirically, but my guess is that the charts use London
+# days since Last.fm is based there
 london_tz = ZoneInfo("Europe/London")
 today_london  = str(datetime.now(london_tz).date())
 
 db = TinyDB('./models/db.json')
 
+# If the data is from yesterday (london), throw it out and start over
 dbCheck = Query()
 dbList = db.search(dbCheck.date.exists())
 if (len(dbList) == 0 or dbList[0]['date'] != today_london):
@@ -32,7 +36,6 @@ if (len(dbList) == 0 or dbList[0]['date'] != today_london):
     db.insert({'date': today_london})
 
 
-# (Optional) where to save uploaded files
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -75,6 +78,7 @@ def upload_file():
 
 
 @app.route("/api/<filename>", methods=["GET"])
+# If a JSON file with the queried name exists, return its data
 def get_json_file(filename):
     file_path = os.path.join(UPLOAD_FOLDER, filename)
 

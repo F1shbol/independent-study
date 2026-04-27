@@ -15,11 +15,7 @@ const Charts = props => {
 
   return (
     <Fragment>
-      {/* <h1>Heading text</h1> */}
       <div className='row'>
-        {/* <div className='col-9'>
-          <Rankings margin={margin} />
-        </div> */}
         <div className='col-12'>
           <div className='row'>
             <div className='col-12'>

@@ -20,25 +20,8 @@ function App() {
 
   return (
     <>
-      {/* <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div> */}
       <h1>Last.fm Popularity Calculator</h1>
       <div className="card">
-        {/* <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button> */}
-        {/* <p className='black-text'>The current time is {new Date(currentTime * 1000).toLocaleString()}.</p> */}
-        {/* <p className='black-text'>The current time is {currentTime}.</p>
-        <p className='black-text'>A week ago is {currentTime - 864000}.</p>
-        <p className='black-text'>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p> */}
         <p className='black-text'> Instructions:</p>
         <ol className='black-text'>
           <li>Visit <a href="https://mainstream.ghan.nl/export.html">this Last.fm export tool</a></li>
@@ -47,9 +30,6 @@ function App() {
           <li>Click "Go", then upload the exported file below</li>
         </ol>
       </div>
-      {/* <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */}
       <FileUploader/>
 
 
@@ -72,11 +52,9 @@ function FileUploader() {
     setFile(event.target.files[0]);
   };
 
-  // const handleQuerySubmit = (e) => {
-  //   setQuery(e.target.value);
-  // };
-
-  // Upload to Flask backend
+  // Upload to Flask backend:
+  // Uploads a user-selected file, waits for a response, 
+  // sets message hook values and sends JSON data to the chart maker
   const handleUpload = async () => {
     if (!file) {
       setMessage("Please select a file first.");
@@ -125,6 +103,9 @@ function FileUploader() {
     });
   };
 
+  // Same as the above function, but skips the step of making an
+  // Axios response and just takes a query and looks for a file
+  // of that name
   const handleBypass = async () => {
     if (query === "") {
       setMessage("Please enter a query first.");
