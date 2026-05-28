@@ -1,5 +1,5 @@
 from .linkify import linkifyInput
-from .frontend import welcome
+# from .frontend import welcome
 from .formula import getScore, playSearch, addWeight, parseRow3, printBookends, findHeaviest, addGeorge
 
 from datetime import datetime
